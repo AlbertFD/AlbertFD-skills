@@ -1,0 +1,32 @@
+{
+  "skill_name": "paper-dashboard",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "Build an interactive HTML dashboard from this paper at Standard depth: https://arxiv.org/abs/1810.04805",
+      "expected_output": "Full tabbed dashboard with MathJax equations, Chart.js charts, glossary, references.",
+      "assertions": [
+        "Uses tabbed navigation (4+ tabs)",
+        "Renders equations with MathJax",
+        "Includes Chart.js charts (>=1 canvas)",
+        "Has a glossary section",
+        "Has a references section",
+        "Self-contained (<=3 CDN scripts, no localhost)"
+      ],
+      "files": []
+    },
+    {
+      "id": 1,
+      "prompt": "Give me a quick interactive dashboard from this paper: https://arxiv.org/abs/1512.03385",
+      "expected_output": "Lean Quick dashboard: Overview+Results, <=3 tabs, a chart, key-facts.",
+      "assertions": [
+        "Quick depth: at most 3 tabs",
+        "Includes Chart.js charts (>=1 canvas)",
+        "Has hero key-facts grid",
+        "Self-contained (<=3 CDN scripts, no localhost)",
+        "Uses CSS variable design system"
+      ],
+      "files": []
+    }
+  ]
+}

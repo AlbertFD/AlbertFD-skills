@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Attention Is All You Need — Interactive Research Dashboard</title>
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] },
+    svg: { fontCache: 'global' }
+  };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root{
+    --bg:#eef1f6; --panel:#ffffff; --ink:#161a22; --muted:#5a6478; --line:#dfe3ec;
+    --proton:#2f2294; --proton-soft:#e1dff5;
+    --anti:#b12438; --anti-soft:#f5dfe2;
+    --he:#478220; --he-soft:#e8f5df;
+    --gold:#b8860b;
+    --shadow:0 1px 2px rgba(16,20,32,.06),0 8px 24px rgba(16,20,32,.06);
+    --radius:14px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.62;font-size:16.5px;-webkit-font-smoothing:antialiased;}
+  h1,h2,h3,h4{font-family:Georgia,"Times New Roman",serif;line-height:1.25;color:var(--ink);font-weight:600}
+  a{color:var(--proton);text-decoration:none} a:hover{text-decoration:underline}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+  header.hero{background:linear-gradient(135deg,#211c49 0%,#312786 55%,#5b9932 130%);
+    color:#fff;padding:46px 0 40px;position:relative;overflow:hidden;}
+  header.hero .wrap{position:relative;z-index:2}
+  .badge-line{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px}
+  .pill{font-size:12.5px;letter-spacing:.04em;text-transform:uppercase;
+    background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);
+    color:#fff;padding:4px 11px;border-radius:999px;font-weight:600}
+  header.hero h1{color:#fff;font-size:33px;margin:.1em 0 .35em;max-width:21em}
+  .authors{color:#d8ddf5;font-size:15px;max-width:60em;margin:0 0 6px}
+  .cite{color:#b9c0ea;font-size:14px;font-style:italic}
+  .orbit{position:absolute;right:-40px;top:-10px;width:320px;height:320px;opacity:.5;z-index:1}
+  @media(max-width:760px){.orbit{display:none}header.hero h1{font-size:26px}}
+  .keyfacts{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:26px}
+  .kf{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.18);border-radius:12px;padding:13px 14px}
+  .kf .num{font-family:Georgia,serif;font-size:23px;font-weight:700;color:#fff;display:block}
+  .kf .lbl{font-size:12.5px;color:#cfd5f2;line-height:1.35;display:block;margin-top:3px}
+  @media(max-width:760px){.keyfacts{grid-template-columns:repeat(2,1fr)}}
+  nav.tabs{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);
+    backdrop-filter:blur(8px);border-bottom:1px solid var(--line);box-shadow:0 2px 10px rgba(16,20,32,.04)}
+  nav.tabs .wrap{display:flex;gap:4px;overflow-x:auto;padding:0 22px}
+  nav.tabs button{background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;
+    font:inherit;font-size:14.5px;font-weight:600;color:var(--muted);padding:14px 14px 11px;white-space:nowrap;transition:.15s}
+  nav.tabs button:hover{color:var(--ink)}
+  nav.tabs button.active{color:var(--proton);border-bottom-color:var(--proton)}
+  main{padding:34px 0 80px}
+  .tabpane{display:none;animation:fade .35s ease}
+  .tabpane.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  section{margin:0 0 30px}
+  h2.sec{font-size:25px;margin:6px 0 4px;padding-bottom:8px;border-bottom:2px solid var(--line)}
+  h2.sec .n{color:var(--proton);font-size:16px;vertical-align:middle;margin-right:10px;
+    background:var(--proton-soft);padding:3px 9px;border-radius:8px}
+  .lead{color:var(--muted);font-size:16px;margin:8px 0 20px;max-width:62em}
+  h3{font-size:19px;margin:26px 0 8px} p{margin:11px 0}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    padding:22px 24px;box-shadow:var(--shadow);margin:16px 0}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  @media(max-width:820px){.grid2,.grid3{grid-template-columns:1fr}}
+  .callout{border-left:4px solid var(--proton);background:var(--proton-soft);padding:13px 18px;border-radius:0 10px 10px 0;margin:16px 0}
+  .callout.anti{border-color:var(--anti);background:var(--anti-soft)}
+  .callout.he{border-color:var(--he);background:var(--he-soft)}
+  .callout h4{margin:0 0 5px;font-size:15.5px} .callout p{margin:5px 0;font-size:15px}
+  .eq{background:#fbfcff;border:1px solid var(--line);border-radius:12px;padding:6px 18px;margin:14px 0;text-align:center;overflow-x:auto}
+  .term-row{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0}
+  .term{flex:1 1 200px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px;transition:.15s}
+  .term:hover{border-color:var(--proton);box-shadow:var(--shadow)}
+  .term .sym{font-family:Georgia,serif;font-size:18px;color:var(--proton);font-weight:700}
+  .term .desc{font-size:13.5px;color:var(--muted);margin-top:3px;display:block}
+  table{border-collapse:collapse;width:100%;font-size:14.5px;margin:10px 0}
+  th,td{border:1px solid var(--line);padding:8px 11px;text-align:left}
+  th{background:var(--proton-soft);font-family:Georgia,serif;font-weight:600}
+  tr:nth-child(even) td{background:#fafbfe}
+  .mono{font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:13.5px}
+  .gloss-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--shadow)}
+  .gloss-card>button{width:100%;text-align:left;background:none;border:none;cursor:pointer;font:inherit;
+    padding:15px 18px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .gloss-card>button .t{font-family:Georgia,serif;font-weight:600;font-size:16.5px}
+  .gloss-card>button .chev{color:var(--muted);transition:.2s;font-size:18px}
+  .gloss-card.open>button .chev{transform:rotate(90deg)}
+  .gloss-body{max-height:0;overflow:hidden;transition:max-height .3s ease;padding:0 18px}
+  .gloss-card.open .gloss-body{max-height:1200px;padding:0 18px 16px}
+  .gloss-body p{font-size:14.5px;margin:8px 0;color:#2a3140}
+  .chartbox{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px 22px;box-shadow:var(--shadow);margin:18px 0}
+  .chartbox h3{margin:0 0 4px} .chartbox .cap{font-size:13.5px;color:var(--muted);margin:0 0 14px}
+  .canvas-host{position:relative;height:340px}
+  .note{font-size:12.5px;color:var(--muted);font-style:italic;margin-top:10px}
+  .ref{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:13px 16px;margin:9px 0;box-shadow:var(--shadow)}
+  .ref .rn{display:inline-block;min-width:26px;font-weight:700;color:var(--proton)}
+  .ref .yr{color:var(--anti);font-weight:600}
+  .ref .gloss-note{display:block;font-size:13.5px;color:var(--muted);margin-top:5px}
+  .ref.cur{border-left:4px solid var(--he)}
+  .tag{font-size:11px;text-transform:uppercase;letter-spacing:.04em;background:var(--he-soft);color:#0a6a6a;padding:2px 8px;border-radius:6px;font-weight:700;margin-left:6px}
+  .step{display:flex;gap:14px;margin:14px 0}
+  .step .dot{flex:0 0 34px;height:34px;border-radius:50%;background:var(--proton);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-family:Georgia,serif}
+  .step .c h4{margin:2px 0 4px} .step .c p{margin:0;font-size:14.5px;color:#2a3140}
+  .footer{color:var(--muted);font-size:13px;text-align:center;padding:30px 0 10px;border-top:1px solid var(--line);margin-top:40px}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <svg class="orbit" viewBox="0 0 200 200" fill="none">
+    <circle cx="100" cy="100" r="6" fill="#ffd84d"/>
+    <g stroke="#fff" stroke-width="1.2" opacity=".55">
+      <line x1="100" y1="100" x2="40" y2="40"/><line x1="100" y1="100" x2="160" y2="40"/>
+      <line x1="100" y1="100" x2="30" y2="110"/><line x1="100" y1="100" x2="170" y2="110"/>
+      <line x1="100" y1="100" x2="60" y2="170"/><line x1="100" y1="100" x2="140" y2="170"/>
+    </g>
+    <g fill="#5b9932"><circle cx="40" cy="40" r="7"/><circle cx="160" cy="40" r="7"/>
+      <circle cx="30" cy="110" r="7"/><circle cx="170" cy="110" r="7"/>
+      <circle cx="60" cy="170" r="7"/><circle cx="140" cy="170" r="7"/></g>
+  </svg>
+  <div class="wrap">
+    <div class="badge-line">
+      <span class="pill">NeurIPS 2017</span>
+      <span class="pill">Google Brain · Google Research</span>
+      <span class="pill">Sequence modeling</span>
+    </div>
+    <h1>Attention Is All You Need</h1>
+    <p class="authors">Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones,
+      Aidan N. Gomez, Łukasz Kaiser, Illia Polosukhin</p>
+    <p class="cite">31st Conference on Neural Information Processing Systems (NeurIPS 2017) ·
+      arXiv:1706.03762 · DOI: 10.48550/arXiv.1706.03762</p>
+    <div class="keyfacts">
+      <div class="kf"><span class="num">28.4</span><span class="lbl">BLEU on WMT'14 EN→DE (new state of the art)</span></div>
+      <div class="kf"><span class="num">41.8</span><span class="lbl">BLEU on WMT'14 EN→FR (single-model SOTA)</span></div>
+      <div class="kf"><span class="num">3.5 days</span><span class="lbl">Training the big model on 8 P100 GPUs</span></div>
+      <div class="kf"><span class="num">O(1)</span><span class="lbl">Path length between any two positions</span></div>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs">
+  <div class="wrap">
+    <button class="active" data-tab="overview">Overview</button>
+    <button data-tab="architecture">Architecture &amp; Equations</button>
+    <button data-tab="training">Training Setup</button>
+    <button data-tab="results">Results &amp; Data</button>
+    <button data-tab="glossary">Glossary</button>
+    <button data-tab="references">References</button>
+  </div>
+</nav>
+
+<main>
+<div class="wrap">
+
+<!-- OVERVIEW -->
+<div class="tabpane active" id="overview">
+  <section>
+    <h2 class="sec"><span class="n">01</span>What this paper achieved</h2>
+    <p class="lead">The authors introduce the <b>Transformer</b>, a sequence-transduction architecture built
+      <em>entirely</em> on attention mechanisms — no recurrence, no convolutions. It set new state-of-the-art
+      translation quality while training far faster and more parallelizably than the recurrent and convolutional
+      models that preceded it. It became the foundation of essentially all modern large language models.</p>
+
+    <div class="grid2">
+      <div class="card">
+        <h3 style="margin-top:0">From recurrence to pure attention</h3>
+        <p>Dominant sequence models (RNNs, LSTMs, GRUs) process tokens <b>one position at a time</b>, which
+          forbids parallelization within a sequence and lengthens training. The Transformer replaces recurrence
+          with <b>self-attention</b>, letting every position attend to every other in a single step.</p>
+        <p>The result is constant <span class="mono">O(1)</span> path length between any two tokens — long-range
+          dependencies are one hop away rather than <span class="mono">O(n)</span> recurrent steps apart.</p>
+      </div>
+      <div class="card">
+        <h3 style="margin-top:0">Why it mattered</h3>
+        <p>Beyond the headline BLEU gains, the Transformer is <b>more parallelizable</b> and reaches top quality
+          at a <b>fraction of the training cost</b> of prior models. Its uniform attention-based design also
+          generalizes: the authors show it works for English constituency parsing too.</p>
+        <p>This combination — quality, speed, generality — is why the architecture, not just the result, became
+          the default substrate for NLP and later vision and multimodal models.</p>
+      </div>
+    </div>
+
+    <h3>The four headline contributions</h3>
+    <div class="grid2">
+      <div class="callout he"><h4>1 · A recurrence-free architecture</h4>
+        <p>The Transformer relies solely on stacked self-attention and position-wise feed-forward layers in an
+          encoder–decoder design (N = 6 layers each).</p></div>
+      <div class="callout"><h4>2 · Multi-head scaled dot-product attention</h4>
+        <p>Attention is computed in parallel across h = 8 heads on scaled dot products, letting the model attend
+          to information from different representation subspaces at once.</p></div>
+      <div class="callout anti"><h4>3 · New translation state of the art</h4>
+        <p>28.4 BLEU on WMT'14 English→German (>2 BLEU over prior best, including ensembles) and 41.8 BLEU
+          single-model on English→French.</p></div>
+      <div class="callout he"><h4>4 · Far cheaper training</h4>
+        <p>The big model reached these scores in 3.5 days on 8 P100 GPUs — a small fraction of the training cost
+          of competing models; the base model trains in ~12 hours.</p></div>
+    </div>
+
+    <div class="callout"><h4>How to read this dashboard</h4>
+      <p><b>Architecture &amp; Equations</b> unpacks scaled dot-product attention, multi-head attention, the
+        feed-forward sublayer and positional encodings term by term. <b>Training Setup</b> covers data, hardware,
+        optimizer and regularization. <b>Results &amp; Data</b> rebuilds the paper's tables as interactive charts.
+        <b>Glossary</b> defines the jargon, and <b>References</b> lists the paper's key citations.</p>
+    </div>
+  </section>
+</div>
+
+<!-- ARCHITECTURE -->
+<div class="tabpane" id="architecture">
+  <section>
+    <h2 class="sec"><span class="n">02</span>Architecture, equation by equation</h2>
+    <p class="lead">The Transformer is an encoder–decoder stack. Both are built from two repeating sublayers —
+      multi-head self-attention and a position-wise feed-forward network — each wrapped in a residual connection
+      and layer normalization: <span class="mono">LayerNorm(x + Sublayer(x))</span>. We unpack the core equations.</p>
+
+    <h3>Equation 1 — Scaled dot-product attention</h3>
+    <p>Attention maps a query and a set of key–value pairs to a weighted sum of the values, where the weight on
+      each value is the compatibility of its key with the query:</p>
+    <div class="eq">
+      \[ \mathrm{Attention}(Q,K,V) = \mathrm{softmax}\!\left(\frac{QK^{\top}}{\sqrt{d_k}}\right)V \]
+    </div>
+    <div class="term-row">
+      <div class="term"><span class="sym">Q</span><span class="desc">Matrix of queries — what each position is "looking for".</span></div>
+      <div class="term"><span class="sym">K</span><span class="desc">Keys — what each position "offers" to be matched against queries.</span></div>
+      <div class="term"><span class="sym">V</span><span class="desc">Values — the content actually aggregated once attention weights are set.</span></div>
+      <div class="term"><span class="sym">QKᵀ</span><span class="desc">Dot-product similarity of every query with every key — the raw attention scores.</span></div>
+      <div class="term"><span class="sym">1/√d<sub>k</sub></span><span class="desc">Scaling factor. For large d_k the dot products grow large and push softmax into low-gradient regions; dividing by √d_k counteracts this.</span></div>
+      <div class="term"><span class="sym">softmax</span><span class="desc">Normalizes scores into weights that sum to 1 across the attended positions.</span></div>
+    </div>
+    <div class="callout"><h4>Why scale by √d<sub>k</sub>?</h4>
+      <p>The authors note that for small d_k additive and dot-product attention perform similarly, but for large
+        d_k the unscaled dot products grow in magnitude, saturating the softmax and shrinking gradients. Scaling
+        by 1/√d_k keeps variance controlled, recovering dot-product attention's speed and memory efficiency
+        (it's just optimized matrix multiplication) without the gradient pathology.</p></div>
+
+    <h3>Equation 2 — Multi-head attention</h3>
+    <p>Rather than one attention function over full-dimensional keys/values/queries, the model linearly projects
+      them h times into lower-dimensional subspaces, attends in parallel, and concatenates:</p>
+    <div class="eq">
+      \[ \mathrm{MultiHead}(Q,K,V) = \mathrm{Concat}(\mathrm{head}_1,\dots,\mathrm{head}_h)\,W^{O}, \quad
+         \mathrm{head}_i = \mathrm{Attention}(QW_i^{Q},KW_i^{K},VW_i^{V}) \]
+    </div>
+    <div class="term-row">
+      <div class="term"><span class="sym">h</span><span class="desc">Number of parallel attention heads (h = 8 in the base model).</span></div>
+      <div class="term"><span class="sym">W<sub>i</sub><sup>Q,K,V</sup></span><span class="desc">Per-head projection matrices into dimension d_k = d_v = d_model/h = 64.</span></div>
+      <div class="term"><span class="sym">W<sup>O</sup></span><span class="desc">Output projection mixing the concatenated heads back to d_model.</span></div>
+      <div class="term"><span class="sym">head<sub>i</sub></span><span class="desc">One attention computation in its own representation subspace.</span></div>
+    </div>
+    <div class="callout he"><h4>Why multiple heads</h4>
+      <p>A single attention head averages over everything it attends to, blurring distinct relationships.
+        Multiple heads let the model jointly attend to information from <b>different representation subspaces at
+        different positions</b> — e.g. one head tracking syntactic dependencies, another co-reference. Because
+        each head is lower-dimensional (64), the total cost is similar to single-head full-dimensional attention.</p></div>
+
+    <h3>Equation 3 — Position-wise feed-forward network</h3>
+    <p>Each layer also applies a small fully connected network to every position independently and identically:</p>
+    <div class="eq">
+      \[ \mathrm{FFN}(x) = \max(0,\,xW_1 + b_1)\,W_2 + b_2 \]
+    </div>
+    <p>Two linear transformations with a ReLU between them. Input/output dimension is d_model = 512; the inner
+      layer is d_ff = 2048.</p>
+
+    <h3>Equation 4 — Positional encoding</h3>
+    <p>With no recurrence or convolution, the model has no inherent notion of order, so sinusoidal position
+      signals are added to the input embeddings:</p>
+    <div class="eq">
+      \[ PE_{(pos,2i)} = \sin\!\left(\frac{pos}{10000^{2i/d_{model}}}\right), \quad
+         PE_{(pos,2i+1)} = \cos\!\left(\frac{pos}{10000^{2i/d_{model}}}\right) \]
+    </div>
+    <div class="callout anti"><h4>Why sinusoids</h4>
+      <p>Each dimension corresponds to a sinusoid of a different wavelength (geometric progression from 2π to
+        ~10000·2π). The authors hypothesize this lets the model easily learn to attend by <b>relative</b>
+        position, since PE(pos+k) is a linear function of PE(pos), and may extrapolate to sequence lengths longer
+        than those seen in training. Learned positional embeddings performed nearly identically.</p></div>
+
+    <h3>The three uses of attention</h3>
+    <div class="grid3">
+      <div class="step"><div class="dot">1</div><div class="c"><h4>Encoder self-attention</h4>
+        <p>Each position attends to all positions in the previous encoder layer.</p></div></div>
+      <div class="step"><div class="dot">2</div><div class="c"><h4>Decoder self-attention</h4>
+        <p>Masked so each position attends only to earlier positions, preserving auto-regression.</p></div></div>
+      <div class="step"><div class="dot">3</div><div class="c"><h4>Encoder–decoder attention</h4>
+        <p>Decoder queries attend over the full encoder output — the classic seq2seq attention.</p></div></div>
+    </div>
+  </section>
+</div>
+
+<!-- TRAINING -->
+<div class="tabpane" id="training">
+  <section>
+    <h2 class="sec"><span class="n">03</span>Training setup</h2>
+    <p class="lead">The recipe is notable for how standard and lightweight it is — the architecture, not exotic
+      training tricks, does the work.</p>
+
+    <div class="card">
+      <div class="step"><div class="dot">A</div><div class="c"><h4>Data</h4>
+        <p>WMT 2014 English–German (~4.5M sentence pairs, 37k shared byte-pair-encoding tokens) and the larger
+          English–French (~36M pairs, 32k word-piece vocabulary). Batches held ~25k source and 25k target tokens.</p></div></div>
+      <div class="step"><div class="dot">B</div><div class="c"><h4>Hardware &amp; schedule</h4>
+        <p>One machine with 8 NVIDIA P100 GPUs. The base model trained for 100,000 steps (~12 hours, ~0.4 s/step);
+          the big model for 300,000 steps (~3.5 days).</p></div></div>
+      <div class="step"><div class="dot">C</div><div class="c"><h4>Optimizer</h4>
+        <p>Adam (β₁ = 0.9, β₂ = 0.98, ε = 10⁻⁹) with a learning rate warmed up linearly over 4,000 steps then
+          decayed proportionally to the inverse square root of the step number.</p></div></div>
+      <div class="step"><div class="dot">D</div><div class="c"><h4>Regularization</h4>
+        <p>Residual dropout P_drop = 0.1 (base) applied to each sublayer output and to embedding+PE sums, plus
+          label smoothing ε_ls = 0.1 — which hurts perplexity but improves BLEU and accuracy.</p></div></div>
+    </div>
+
+    <h3>Base vs. big model</h3>
+    <table>
+      <tr><th>Hyperparameter</th><th>Base</th><th>Big</th></tr>
+      <tr><td>Layers N (each stack)</td><td>6</td><td>6</td></tr>
+      <tr><td>Model dimension d<sub>model</sub></td><td>512</td><td>1024</td></tr>
+      <tr><td>Feed-forward dim d<sub>ff</sub></td><td>2048</td><td>4096</td></tr>
+      <tr><td>Attention heads h</td><td>8</td><td>16</td></tr>
+      <tr><td>Dropout P<sub>drop</sub></td><td>0.1</td><td>0.3</td></tr>
+      <tr><td>Training steps</td><td>100,000</td><td>300,000</td></tr>
+      <tr><td>Parameters</td><td>65M</td><td>213M</td></tr>
+    </table>
+    <p class="note">Values from Tables 1 and 3 of the paper.</p>
+  </section>
+</div>
+
+<!-- RESULTS -->
+<div class="tabpane" id="results">
+  <section>
+    <h2 class="sec"><span class="n">04</span>Results &amp; data</h2>
+    <p class="lead">The charts below are built from the exact values reported in Tables 1–3 of the paper. Hover any
+      bar or point for its value.</p>
+
+    <div class="chartbox">
+      <h3>Translation quality (BLEU) vs. prior models — Table 2</h3>
+      <p class="cap">WMT'14 test BLEU. The Transformer (big) tops every prior single model and ensemble on both
+        language pairs. <b>Exact values quoted in Table 2.</b></p>
+      <div class="canvas-host"><canvas id="chartBleu"></canvas></div>
+      <p class="note">Transformer (big): 28.4 EN→DE, 41.8 EN→FR. Transformer (base): 27.3 / 38.1.</p>
+    </div>
+
+    <div class="chartbox">
+      <h3>Training cost (FLOPs) — Table 2</h3>
+      <p class="cap">Estimated floating-point operations to train, log scale. The Transformer reaches better BLEU
+        at one to two orders of magnitude lower cost than competing models. <b>Exact values from Table 2.</b></p>
+      <div class="canvas-host"><canvas id="chartFlops"></canvas></div>
+      <p class="note">Transformer base 3.3×10¹⁸, big 2.3×10¹⁹ FLOPs (EN→FR training cost shown for prior models where applicable).</p>
+    </div>
+
+    <div class="chartbox">
+      <h3>Effect of the number of attention heads — Table 3</h3>
+      <p class="cap">Holding the compute roughly fixed and varying h. Quality peaks around 8 heads and degrades
+        with too few or too many. <b>Dev-set (newstest2013) BLEU, exact values from Table 3 (rows A).</b></p>
+      <div class="canvas-host"><canvas id="chartHeads"></canvas></div>
+      <p class="note">h = 1, 4, 8, 16, 32 → BLEU 24.9, 25.5, 25.8, 25.8, 25.4.</p>
+    </div>
+
+    <div class="chartbox">
+      <h3>Per-layer complexity &amp; path length — Table 1</h3>
+      <p class="cap">Maximum path length between any two positions, by layer type (n = sequence length, d =
+        representation dim). Shorter paths make long-range dependencies easier to learn. <b>From Table 1.</b></p>
+      <div class="canvas-host"><canvas id="chartPath"></canvas></div>
+      <p class="note">Self-attention O(1); recurrent O(n); convolutional O(log_k n). Complexity per layer:
+        self-attention O(n²·d), recurrent O(n·d²).</p>
+    </div>
+
+    <div class="callout"><h4>Beyond translation</h4>
+      <p>Applied to English constituency parsing (WSJ Penn Treebank), the Transformer reached 91.3 F1 in the
+        WSJ-only setting and 92.7 F1 in the semi-supervised setting — competitive with or beating prior
+        task-specific models, showing the architecture generalizes beyond machine translation.</p></div>
+  </section>
+</div>
+
+<!-- GLOSSARY -->
+<div class="tabpane" id="glossary">
+  <section>
+    <h2 class="sec"><span class="n">05</span>Glossary &amp; concept cards</h2>
+    <p class="lead">Click any card to expand.</p>
+    <div class="grid2" id="glossGrid"></div>
+  </section>
+</div>
+
+<!-- REFERENCES -->
+<div class="tabpane" id="references">
+  <section>
+    <h2 class="sec"><span class="n">06</span>Key references</h2>
+    <p class="lead">A selection of the paper's most load-bearing citations, each with a note on what it
+      contributes. (The original paper lists ~40 references; these are the central ones for following the argument.)</p>
+
+    <div class="ref"><span class="rn">[2]</span> D. Bahdanau, K. Cho, Y. Bengio, "Neural Machine Translation by Jointly Learning to Align and Translate," ICLR (<span class="yr">2015</span>).
+      <span class="gloss-note">Introduced the attention mechanism for seq2seq translation — the conceptual seed the Transformer takes to its logical end.</span></div>
+    <div class="ref"><span class="rn">[38]</span> I. Sutskever, O. Vinyals, Q. V. Le, "Sequence to Sequence Learning with Neural Networks," NeurIPS (<span class="yr">2014</span>).
+      <span class="gloss-note">The encoder–decoder seq2seq framework the Transformer reimplements without recurrence.</span></div>
+    <div class="ref"><span class="rn">[9]</span> J. Gehring, M. Auli, D. Grangier, D. Yarats, Y. Dauphin, "Convolutional Sequence to Sequence Learning," ICML (<span class="yr">2017</span>).
+      <span class="gloss-note">ConvS2S — the convolutional baseline the Transformer is benchmarked against and beats.</span></div>
+    <div class="ref"><span class="rn">[32]</span> N. Shazeer et al., "Outrageously Large Neural Networks: The Sparsely-Gated Mixture-of-Experts Layer," ICLR (<span class="yr">2017</span>).
+      <span class="gloss-note">The MoE model among the strong prior baselines in Table 2.</span></div>
+    <div class="ref"><span class="rn">[8]</span> Y. Wu et al., "Google's Neural Machine Translation System (GNMT)," arXiv (<span class="yr">2016</span>).
+      <span class="gloss-note">The production-scale RNN translation system that defined prior state of the art.</span></div>
+    <div class="ref"><span class="rn">[18]</span> N. Kalchbrenner et al., "Neural Machine Translation in Linear Time (ByteNet)," arXiv (<span class="yr">2017</span>).
+      <span class="gloss-note">Convolutional model motivating the path-length / complexity comparison in Table 1.</span></div>
+    <div class="ref"><span class="rn">[6]</span> J. L. Ba, J. R. Kiros, G. E. Hinton, "Layer Normalization," arXiv (<span class="yr">2016</span>).
+      <span class="gloss-note">The normalization applied around each sublayer (LayerNorm(x + Sublayer(x))).</span></div>
+    <div class="ref"><span class="rn">[19]</span> D. Kingma, J. Ba, "Adam: A Method for Stochastic Optimization," ICLR (<span class="yr">2015</span>).
+      <span class="gloss-note">The optimizer used, with the custom warmup / inverse-sqrt learning-rate schedule.</span></div>
+    <div class="ref"><span class="rn">[36]</span> C. Szegedy et al., "Rethinking the Inception Architecture for Computer Vision," CVPR (<span class="yr">2016</span>).
+      <span class="gloss-note">Source of the label-smoothing regularization (ε_ls = 0.1) used in training.</span></div>
+
+    <p class="note">References are drawn from the original paper's bibliography (Vaswani et al., NeurIPS 2017). Numbers
+      in brackets follow the paper's own citation ordering.</p>
+  </section>
+</div>
+
+</div><!-- /.wrap -->
+</main>
+
+<div class="footer wrap">
+  Interactive study dashboard built from Vaswani et al., "Attention Is All You Need," NeurIPS 2017 (arXiv:1706.03762).
+  Charts reconstruct values reported in Tables 1–3; equations rendered with MathJax · charts with Chart.js.
+</div>
+
+<script>
+const tabButtons = document.querySelectorAll('nav.tabs button');
+const panes = document.querySelectorAll('.tabpane');
+let chartsBuilt = false;
+tabButtons.forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const id = btn.dataset.tab;
+    tabButtons.forEach(b=>b.classList.toggle('active', b===btn));
+    panes.forEach(p=>p.classList.toggle('active', p.id===id));
+    window.scrollTo({top:0,behavior:'smooth'});
+    if(id==='results' && !chartsBuilt){ buildCharts(); chartsBuilt=true; }
+    if(window.MathJax && MathJax.typesetPromise){ MathJax.typesetPromise(); }
+  });
+});
+
+const glossary = [
+  ['Self-attention','An attention mechanism relating different positions of a single sequence to compute a representation of that sequence. Every token attends to every other token in one step, so the maximum path length between any two positions is O(1) — the core idea that lets the Transformer drop recurrence.'],
+  ['Scaled dot-product attention','The specific attention function used: similarity scores are the dot products of queries and keys, divided by √d_k for numerical stability, passed through softmax, and used to weight the values. It is fast and memory-efficient because it reduces to two matrix multiplications.'],
+  ['Multi-head attention','Running h attention functions in parallel on linearly projected, lower-dimensional (d/h) queries/keys/values, then concatenating. Lets the model attend to information from different representation subspaces at different positions simultaneously, at roughly the cost of a single full-dimensional head.'],
+  ['Query, Key, Value (Q, K, V)','The three projections of the input in attention. A query asks "what am I looking for"; keys advertise "what I contain"; values are the content aggregated according to query–key compatibility. In self-attention all three derive from the same sequence.'],
+  ['Encoder–decoder architecture','A seq2seq design where an encoder maps the input sequence to continuous representations and a decoder generates the output one token at a time, conditioning on the encoder output and previously generated tokens. The Transformer uses 6 such layers in each stack.'],
+  ['Positional encoding','Information about token order injected into the model, since attention is permutation-invariant. The Transformer adds fixed sinusoidal signals of geometrically spaced wavelengths to the embeddings, allowing the model to attend by relative position and potentially extrapolate to longer sequences.'],
+  ['Position-wise feed-forward network (FFN)','A two-layer fully connected network with a ReLU in between, applied identically and independently to each position. Inner dimension d_ff = 2048 expands then contracts the d_model = 512 representation, adding non-linear processing per token.'],
+  ['Residual connection &amp; layer norm','Each sublayer output is computed as LayerNorm(x + Sublayer(x)). The residual (skip) connection eases gradient flow through deep stacks, and layer normalization stabilizes training by normalizing across features.'],
+  ['Masked attention','In the decoder self-attention, future positions are masked out (set to −∞ before softmax) so that the prediction for position i can depend only on positions before i — preserving the auto-regressive property needed for generation.'],
+  ['BLEU','Bilingual Evaluation Understudy — the standard automatic metric for machine translation quality, comparing n-gram overlap between system output and reference translations. Higher is better; the Transformer set new BLEU records on WMT\'14 EN→DE (28.4) and EN→FR (41.8).'],
+  ['Byte-pair encoding (BPE) / word-piece','Subword tokenization schemes that split rare words into frequent sub-units, giving a fixed, shared vocabulary (37k for EN–DE, 32k for EN–FR here) that handles rare and compound words without an explosion in vocabulary size.'],
+  ['Label smoothing','A regularizer that replaces hard 0/1 training targets with slightly softened distributions (ε_ls = 0.1). It worsens perplexity (the model becomes less confident) but improves BLEU and accuracy, discouraging over-confident predictions.'],
+  ['Maximum path length','The number of steps a signal must traverse to connect two positions in a sequence. Shorter paths make long-range dependencies easier to learn: O(1) for self-attention vs O(n) for recurrent layers — a central entry in the Table 1 comparison.']
+];
+const gg = document.getElementById('glossGrid');
+glossary.forEach(([t,b])=>{
+  const card = document.createElement('div');
+  card.className='gloss-card';
+  card.innerHTML = `<button><span class="t">${t}</span><span class="chev">›</span></button><div class="gloss-body"><p>${b}</p></div>`;
+  card.querySelector('button').addEventListener('click',()=>card.classList.toggle('open'));
+  gg.appendChild(card);
+});
+
+const COL = {proton:'#2f2294', anti:'#b12438', he:'#478220', gold:'#b8860b', muted:'#5a6478'};
+Chart.defaults.font.family = "-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif";
+Chart.defaults.font.size = 13;
+Chart.defaults.color = '#5a6478';
+
+function buildCharts(){
+  /* BLEU comparison */
+  new Chart(document.getElementById('chartBleu'),{
+    type:'bar',
+    data:{labels:['ByteNet','GNMT+RL','ConvS2S','MoE','GNMT+RL\n(ensemble)','ConvS2S\n(ensemble)','Transformer\n(base)','Transformer\n(big)'],
+      datasets:[
+        {label:'EN→DE BLEU', data:[23.75,24.6,25.16,26.03,26.30,26.36,27.3,28.4],
+         backgroundColor:COL.proton},
+        {label:'EN→FR BLEU', data:[null,39.92,40.46,40.56,41.16,41.29,38.1,41.8],
+         backgroundColor:COL.he}
+      ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      scales:{y:{title:{display:true,text:'BLEU'},suggestedMin:22,suggestedMax:43}},
+      plugins:{legend:{position:'top'}}}
+  });
+  /* FLOPs (log) */
+  new Chart(document.getElementById('chartFlops'),{
+    type:'bar',
+    data:{labels:['Transformer\n(base)','Transformer\n(big)','ConvS2S','GNMT+RL','MoE','ConvS2S\n(ensemble)','GNMT+RL\n(ensemble)'],
+      datasets:[{label:'Training cost (FLOPs)', data:[3.3e18,2.3e19,9.6e18,2.3e19,2.0e19,1.5e20,1.8e20],
+        backgroundColor:[COL.he,COL.he,COL.proton,COL.proton,COL.proton,COL.anti,COL.anti]}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      scales:{y:{type:'logarithmic',title:{display:true,text:'FLOPs (log scale)'}}},
+      plugins:{legend:{display:false},
+        tooltip:{callbacks:{label:c=>`${c.parsed.y.toExponential(1)} FLOPs`}}}}
+  });
+  /* heads */
+  new Chart(document.getElementById('chartHeads'),{
+    type:'line',
+    data:{labels:['1','4','8','16','32'],
+      datasets:[{label:'Dev BLEU vs. # heads h', data:[24.9,25.5,25.8,25.8,25.4],
+        borderColor:COL.proton, backgroundColor:'rgba(47,34,148,.10)', fill:true, tension:.25, pointRadius:5, borderWidth:2.4}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      scales:{x:{title:{display:true,text:'Number of attention heads h'}},
+              y:{title:{display:true,text:'BLEU (newstest2013 dev)'},suggestedMin:24,suggestedMax:26.2}},
+      plugins:{legend:{display:false}}}
+  });
+  /* path length */
+  new Chart(document.getElementById('chartPath'),{
+    type:'bar',
+    data:{labels:['Self-attention','Recurrent','Convolutional','Self-attn (restricted)'],
+      datasets:[{label:'Max path length (n=50)', data:[1,50,5,17],
+        backgroundColor:[COL.he,COL.anti,COL.proton,COL.gold]}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      scales:{y:{title:{display:true,text:'Max path length (steps, illustrative n=50)'},beginAtZero:true}},
+      plugins:{legend:{display:false},
+        tooltip:{callbacks:{label:c=>{const m={0:'O(1)',1:'O(n)',2:'O(log_k n)',3:'O(n/r)'};return `${m[c.dataIndex]} → ${c.parsed.y} for n=50`;}}}}}
+  });
+}
+</script>
+</body>
+</html>
