@@ -8,4 +8,5 @@ node_modules/
 paper-dashboard-workspace/
 
 # packaged skill files (build artifacts)
+build/
 *.skill
