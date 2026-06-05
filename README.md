@@ -7,6 +7,7 @@ Repo: https://github.com/AlbertFD/AlbertFD-skills
 ## Skills
 
 - **[paper-dashboard](paper-dashboard/)** — Turns a research paper (PDF, arXiv, DOI, or journal URL) into a self-contained interactive HTML dashboard: tabbed sections, MathJax equations explained term-by-term, Chart.js figure reconstructions, a glossary, annotated references, and a ⚠ Source Check transparency table (✅ full text / 📄 cited paper / ⚠ secondary source / 🔍 inferred). Asks for depth (Quick / Standard / Deep) before building.
+- **[learning-map](learning-map/)** — Diagnoses what a learner *actually* misunderstands and teaches from there. Maps existing understanding, traces confusion to its root (the specific misconception or missing prerequisite under the symptom), then produces two artifacts: a Markdown **understanding map** of the diagnosis and a self-contained **interactive HTML lesson** built around that exact gap — with a working manipulative, predict-then-check steps, and graded practice whose wrong answers are the learner's own misconception. Subject chosen at runtime; uses surrounding project/chat/file context.
 
 See each skill's own README for full details.
 

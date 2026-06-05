@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Interactive Lesson · Eigenvectors</title>
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$']] },
+    svg: { scale: 0.9 }
+  };
+</script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js"></script>
+<style>
+  :root{
+    --bg:#fbfbfa; --ink:#1f2328; --muted:#5b636b; --line:#e3e3e0;
+    --accent:#2f6f4f; --accent-soft:#eef6f0; --accent-bd:#bfe0cc;
+    --warn:#9a4a2f; --warn-soft:#fcefe9; --warn-bd:#f0c9b8;
+    --eig1:#2f6f4f; --eig2:#b3791d; --vec:#2659a8;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.6;}
+  .wrap{max-width:760px;margin:0 auto;padding:32px 20px 80px;}
+  h1{font-size:1.7rem;margin:.2em 0 .1em;}
+  h2{font-size:1.25rem;margin:1.9em 0 .4em;border-bottom:1px solid var(--line);padding-bottom:.3em;}
+  .sub{color:var(--muted);margin-top:0;}
+  .diagnosis{background:var(--accent-soft);border:1px solid var(--accent-bd);
+    border-radius:12px;padding:16px 20px;margin:22px 0;}
+  .diagnosis h3{margin:.1em 0 .3em;font-size:1.02rem;color:var(--accent);}
+  .card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin:16px 0;}
+  .muted{color:var(--muted);}
+  button{font:inherit;cursor:pointer;border:1px solid var(--line);background:#fff;
+    border-radius:8px;padding:7px 12px;transition:.12s;}
+  button:hover{border-color:var(--accent);}
+  .reveal-btn{background:var(--accent);color:#fff;border-color:var(--accent);}
+  .hidden{display:none;}
+  .stage{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start;}
+  .controls{flex:1;min-width:230px;}
+  .row{display:flex;align-items:center;gap:10px;margin:6px 0;}
+  .row label{width:34px;font-variant-numeric:tabular-nums;}
+  input[type=range]{flex:1;accent-color:var(--accent);}
+  .val{width:46px;text-align:right;font-variant-numeric:tabular-nums;color:var(--muted);}
+  .presets{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 4px;}
+  .presets button{font-size:.86rem;padding:5px 9px;}
+  svg{background:#fff;border:1px solid var(--line);border-radius:10px;touch-action:none;}
+  .readout{font-size:.92rem;margin-top:8px;}
+  .chip{display:inline-block;border-radius:6px;padding:1px 7px;font-size:.85rem;
+    font-variant-numeric:tabular-nums;}
+  .chip.real{background:var(--accent-soft);color:var(--accent);border:1px solid var(--accent-bd);}
+  .chip.cx{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn-bd);}
+  .q{margin:14px 0;}
+  .opts{display:flex;flex-direction:column;gap:8px;margin:8px 0;}
+  .opt{text-align:left;}
+  .opt.correct{background:var(--accent-soft);border-color:var(--accent-bd);}
+  .opt.wrong{background:var(--warn-soft);border-color:var(--warn-bd);}
+  .fb{font-size:.93rem;margin-top:8px;padding:10px 12px;border-radius:8px;display:none;}
+  .fb.show{display:block;}
+  .fb.good{background:var(--accent-soft);border:1px solid var(--accent-bd);}
+  .fb.bad{background:var(--warn-soft);border:1px solid var(--warn-bd);}
+  code{background:#f0f0ee;border-radius:4px;padding:1px 5px;font-size:.92em;}
+  mjx-container{max-width:100%;}
+  mjx-container[display="true"]{overflow-x:auto;overflow-y:hidden;}
+  mjx-container[display="true"] svg{max-width:100%;height:auto;}
+  .legend{font-size:.85rem;color:var(--muted);margin-top:6px;}
+  .legend b{font-weight:600;}
+  details{margin:8px 0;}
+  summary{cursor:pointer;color:var(--accent);font-weight:600;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>Eigenvectors — finally seeing what they <em>are</em></h1>
+  <p class="sub">An interactive lesson built around the specific thing that was tripping you up.</p>
+
+  <div class="diagnosis">
+    <h3>What was actually going wrong</h3>
+    <p style="margin:0">You can compute \(Av\) and grind out the determinant fine — none of that is broken.
+    The missing piece sits <em>underneath</em>: you've been experiencing a matrix as a
+    <strong>rule for producing a new vector</strong> rather than as a
+    <strong>transformation that picks up the whole plane and moves it</strong>. Eigenvectors feel
+    hollow because "directions that don't get knocked off their line" means nothing until you can
+    feel the plane <em>turning</em> in the first place. This page makes the plane move so you can see it.</p>
+  </div>
+
+  <h2>1. First, let your old model fail</h2>
+  <div class="card">
+    <p>Here's a matrix that rotates the plane by 90°:
+    $$R=\begin{pmatrix}0&-1\\1&0\end{pmatrix}$$
+    <strong>Predict before revealing:</strong> is there <em>any</em> nonzero vector \(v\) that \(R\)
+    leaves pointing along its own line (i.e. \(Rv=\lambda v\) for some real number \(\lambda\))?</p>
+    <button class="reveal-btn" onclick="document.getElementById('r1').classList.remove('hidden');this.classList.add('hidden')">Reveal</button>
+    <div id="r1" class="hidden">
+      <p style="margin-top:4px"><strong>No — none.</strong> Every direction gets turned a quarter
+      turn, so nothing stays on its own line. If you think of the matrix as "just a multiplication
+      rule," that fact is invisible. If you think of it as <em>rotating the plane</em>, it's obvious:
+      a rotation has no invariant directions (over the reals). That picture — "what does this matrix
+      <em>do</em> to the plane?" — is the whole game. Play with it below.</p>
+    </div>
+  </div>
+
+  <h2>2. Watch a matrix move the plane</h2>
+  <div class="card">
+    <p class="muted" style="margin-top:0">Drag the sliders to change \(A=\begin{pmatrix}a&b\\c&d\end{pmatrix}\).
+    The faint grid is the plane before; the green grid is where \(A\) sends it. The
+    <span style="color:var(--vec);font-weight:600">blue arrow</span> is a vector you can drag; its
+    image \(Av\) is the lighter arrow. The dashed lines are the <b>eigenvectors</b> — the directions
+    \(A\) only stretches, never turns.</p>
+    <div class="stage">
+      <div>
+        <svg id="plane" width="360" height="360" viewBox="0 0 360 360"></svg>
+        <div class="legend">
+          <b style="color:var(--eig1)">— eigenline 1</b> &nbsp;
+          <b style="color:var(--eig2)">— eigenline 2</b> &nbsp;
+          <b style="color:var(--vec)">→ your v</b> (drag it)
+        </div>
+      </div>
+      <div class="controls">
+        <div class="row"><label>a</label><input type="range" id="sa" min="-3" max="3" step="0.1" value="2"><span class="val" id="va">2.0</span></div>
+        <div class="row"><label>b</label><input type="range" id="sb" min="-3" max="3" step="0.1" value="0"><span class="val" id="vb">0.0</span></div>
+        <div class="row"><label>c</label><input type="range" id="sc" min="-3" max="3" step="0.1" value="0"><span class="val" id="vc">0.0</span></div>
+        <div class="row"><label>d</label><input type="range" id="sd" min="-3" max="3" step="0.1" value="1"><span class="val" id="vd">1.0</span></div>
+        <div class="presets">
+          <button onclick="setM(2,0,0,3)">stretch</button>
+          <button onclick="setM(0,-1,1,0)">rotate 90°</button>
+          <button onclick="setM(1,1,0,1)">shear</button>
+          <button onclick="setM(1,0,0,-1)">flip y</button>
+        </div>
+        <div class="readout" id="readout"></div>
+        <p class="muted" style="font-size:.86rem;margin:.6em 0 0">Try the <code>rotate 90°</code> preset:
+        the eigenlines vanish (the readout goes complex). Try <code>stretch</code>: drag your vector
+        onto a dashed line and watch \(Av\) stay perfectly on it — that's <em>all</em> an eigenvector is.</p>
+      </div>
+    </div>
+  </div>
+
+  <h2>3. Re-read the definition, now that it means something</h2>
+  <div class="card">
+    <p style="margin-top:0">The equation you'd memorised:
+    $$A v = \lambda v$$
+    In English, with the picture you now have: "<strong>\(A\) moves the whole plane, but the arrow
+    \(v\) doesn't get turned off its own line — it only gets scaled by \(\lambda\).</strong>"
+    The eigenvalue \(\lambda\) is just <em>how much</em> that special direction gets stretched
+    (\(\lambda>1\)), squashed (\(0<\lambda<1\)), or flipped (\(\lambda<0\)). That's why people care:
+    eigenvectors are the axes along which a complicated transformation becomes simple multiplication.</p>
+  </div>
+
+  <h2>4. Practice — spot the trap</h2>
+  <div class="card" id="quiz"></div>
+
+  <h2>5. Transfer challenge</h2>
+  <div class="card">
+    <p style="margin-top:0">A matrix you haven't seen here:
+    $$M=\begin{pmatrix}3&1\\0&2\end{pmatrix}$$
+    Which of these is an eigenvector of \(M\)? Decide using the picture (does \(Mv\) stay on \(v\)'s line?), then reveal.</p>
+    <div class="opts" id="transfer"></div>
+    <div class="fb" id="tfb"></div>
+    <details><summary>Show the worked reasoning</summary>
+      <p>\(M\) is upper-triangular, so its eigenvalues are the diagonal: \(\lambda=3\) and \(\lambda=2\).
+      For \(\lambda=3\): \((M-3I)v=0 \Rightarrow \begin{pmatrix}0&1\\0&-1\end{pmatrix}v=0 \Rightarrow v=(1,0)\).
+      Check: \(M(1,0)=(3,0)=3\cdot(1,0)\) ✓ — stays on its line.
+      For \(\lambda=2\): \(v=(1,-1)\), and \(M(1,-1)=(2,-2)=2\cdot(1,-1)\) ✓.
+      The vector \((1,1)\) is the tempting trap: \(M(1,1)=(4,2)\), which points a different way —
+      it got <em>turned</em>, so it is not an eigenvector even though it looks "neat."</p>
+    </details>
+  </div>
+
+  <p class="muted" style="font-size:.85rem;margin-top:30px">Made for you by the <b>learning-map</b> skill —
+  diagnosis first, then a lesson aimed at the exact gap. Tweak the difficulty or ask for a different
+  manipulative any time.</p>
+
+</div>
+
+<script>
+/* ---------- the manipulative ---------- */
+const SVG="http://www.w3.org/2000/svg";
+const plane=document.getElementById('plane');
+const C=180, S=34;               // center px, scale px/unit
+const sx=x=>C+S*x, sy=y=>C-S*y;  // world -> screen
+const ix=px=>(px-C)/S, iy=py=>(C-py)/S;
+let M={a:2,b:0,c:0,d:1};
+let v={x:1.4,y:0.6};             // draggable test vector (world coords)
+
+function el(tag,attrs){const e=document.createElementNS(SVG,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);return e;}
+function apply(m,x,y){return {x:m.a*x+m.b*y, y:m.c*x+m.d*y};}
+
+function eig(m){
+  const tr=m.a+m.d, det=m.a*m.d-m.b*m.c, disc=tr*tr-4*det;
+  if(disc<-1e-9) return {real:false, tr, det};
+  const s=Math.sqrt(Math.max(0,disc));
+  const l1=(tr+s)/2, l2=(tr-s)/2;
+  const vecFor=l=>{
+    // (A - lI) v = 0
+    let x,y;
+    if(Math.abs(m.b)>1e-9){x=m.b; y=l-m.a;}
+    else if(Math.abs(m.c)>1e-9){x=l-m.d; y=m.c;}
+    else {x=(Math.abs(m.a-l)<1e-9)?1:0; y=(Math.abs(m.a-l)<1e-9)?0:1;}
+    const n=Math.hypot(x,y)||1; return {x:x/n,y:y/n};
+  };
+  return {real:true, l1, l2, v1:vecFor(l1), v2:vecFor(l2)};
+}
+
+function draw(){
+  while(plane.firstChild) plane.removeChild(plane.firstChild);
+  const R=5; // world extent to draw
+  // faint original grid
+  for(let i=-R;i<=R;i++){
+    plane.appendChild(el('line',{x1:sx(i),y1:sy(-R),x2:sx(i),y2:sy(R),stroke:'#eee',"stroke-width":1}));
+    plane.appendChild(el('line',{x1:sx(-R),y1:sy(i),x2:sx(R),y2:sy(i),stroke:'#eee',"stroke-width":1}));
+  }
+  // transformed grid (image of gridlines under M)
+  const tcol='#cfe6d8';
+  for(let i=-R;i<=R;i++){
+    const p1=apply(M,i,-R), p2=apply(M,i,R);
+    plane.appendChild(el('line',{x1:sx(p1.x),y1:sy(p1.y),x2:sx(p2.x),y2:sy(p2.y),stroke:tcol,"stroke-width":1}));
+    const q1=apply(M,-R,i), q2=apply(M,R,i);
+    plane.appendChild(el('line',{x1:sx(q1.x),y1:sy(q1.y),x2:sx(q2.x),y2:sy(q2.y),stroke:tcol,"stroke-width":1}));
+  }
+  // axes
+  plane.appendChild(el('line',{x1:sx(-R),y1:sy(0),x2:sx(R),y2:sy(0),stroke:'#bbb',"stroke-width":1.4}));
+  plane.appendChild(el('line',{x1:sx(0),y1:sy(-R),x2:sx(0),y2:sy(R),stroke:'#bbb',"stroke-width":1.4}));
+
+  const e=eig(M);
+  // eigenlines
+  if(e.real){
+    const dl=(vec,col)=>{plane.appendChild(el('line',{
+      x1:sx(-vec.x*R),y1:sy(-vec.y*R),x2:sx(vec.x*R),y2:sy(vec.y*R),
+      stroke:col,"stroke-width":2,"stroke-dasharray":"6 5",opacity:.9}));};
+    dl(e.v1,'#2f6f4f');
+    if(Math.abs(e.v1.x*e.v2.y-e.v1.y*e.v2.x)>1e-6) dl(e.v2,'#b3791d');
+  }
+  // test vector v and its image Av
+  const Av=apply(M,v.x,v.y);
+  arrow(0,0,Av.x,Av.y,'#9bbce0',2);          // image (light blue)
+  arrow(0,0,v.x,v.y,'#2659a8',2.6);          // v (blue)
+  // draggable handle
+  plane.appendChild(el('circle',{cx:sx(v.x),cy:sy(v.y),r:7,fill:'#2659a8',opacity:.25}));
+  plane.appendChild(el('circle',{cx:sx(v.x),cy:sy(v.y),r:4,fill:'#2659a8'}));
+
+  // readout
+  const ro=document.getElementById('readout');
+  if(e.real){
+    const onLine=Math.abs(v.x*e.v1.y-v.y*e.v1.x)<0.06 || Math.abs(v.x*e.v2.y-v.y*e.v2.x)<0.06;
+    ro.innerHTML=`eigenvalues: <span class="chip real">λ₁=${e.l1.toFixed(2)}</span>
+      <span class="chip real">λ₂=${e.l2.toFixed(2)}</span><br>
+      <span class="muted">${onLine?'Your v is on an eigenline — Av stays on it. ✓':'Av points off v’s line: v is not an eigenvector here.'}</span>`;
+  }else{
+    ro.innerHTML=`<span class="chip cx">eigenvalues are complex</span><br>
+      <span class="muted">No real eigenvectors — this transformation turns every direction (it has a rotation in it).</span>`;
+  }
+}
+function arrow(x1,y1,x2,y2,col,w){
+  plane.appendChild(el('line',{x1:sx(x1),y1:sy(y1),x2:sx(x2),y2:sy(y2),stroke:col,"stroke-width":w}));
+  const ang=Math.atan2(sy(y2)-sy(y1),sx(x2)-sx(x1)),h=9;
+  const a1=ang+Math.PI*0.84,a2=ang-Math.PI*0.84;
+  plane.appendChild(el('path',{d:`M ${sx(x2)} ${sy(y2)} L ${sx(x2)+h*Math.cos(a1)} ${sy(y2)+h*Math.sin(a1)} `+
+    `L ${sx(x2)+h*Math.cos(a2)} ${sy(y2)+h*Math.sin(a2)} Z`,fill:col}));
+}
+function syncSliders(){sa.value=M.a;sb.value=M.b;sc.value=M.c;sd.value=M.d;
+  va.textContent=(+M.a).toFixed(1);vb.textContent=(+M.b).toFixed(1);
+  vc.textContent=(+M.c).toFixed(1);vd.textContent=(+M.d).toFixed(1);}
+['sa','sb','sc','sd'].forEach(id=>{const s=document.getElementById(id);
+  s.addEventListener('input',()=>{M={a:+sa.value,b:+sb.value,c:+sc.value,d:+sd.value};syncSliders();draw();});});
+function setM(a,b,c,d){M={a,b,c,d};syncSliders();draw();}
+
+// drag the test vector
+let dragging=false;
+function pt(ev){const r=plane.getBoundingClientRect();const cx=(ev.touches?ev.touches[0].clientX:ev.clientX)-r.left;
+  const cy=(ev.touches?ev.touches[0].clientY:ev.clientY)-r.top;
+  return {x:cx*(360/r.width), y:cy*(360/r.height)};}
+function near(ev){const p=pt(ev);return Math.hypot(p.x-sx(v.x),p.y-sy(v.y))<18;}
+plane.addEventListener('pointerdown',ev=>{if(near(ev)){dragging=true;plane.setPointerCapture(ev.pointerId);}});
+plane.addEventListener('pointermove',ev=>{if(!dragging)return;const p=pt(ev);
+  v={x:Math.max(-5,Math.min(5,ix(p.x))),y:Math.max(-5,Math.min(5,iy(p.y)))};draw();});
+plane.addEventListener('pointerup',()=>dragging=false);
+plane.addEventListener('pointercancel',()=>dragging=false);
+
+syncSliders();draw();
+
+/* ---------- graded practice (distractors = the misconception) ---------- */
+const questions=[
+ {q:'A matrix \\(A\\) has eigenvalue \\(\\lambda=0.5\\) with eigenvector \\(v\\). What happens to \\(v\\) under \\(A\\)?',
+  opts:[
+   {t:'It gets shorter but keeps pointing the same way (scaled by ½).',correct:true,
+    fb:'Right. An eigenvalue is just the stretch factor along that fixed direction — 0.5 means halved in length, same line.'},
+   {t:'It disappears / becomes the zero vector, because λ is less than 1.',correct:false,
+    fb:'This is the "smaller must mean nothing" reflex. λ=0.5 scales v to half length, it doesn’t annihilate it. Only λ=0 would collapse a direction.'},
+   {t:'It rotates by 50°.',correct:false,
+    fb:'Eigenvalues never encode rotation — the whole point of an eigenvector is that it does NOT turn. λ only scales.'}]},
+ {q:'You compute the eigenvalues of a 2×2 rotation matrix and they come out complex. What does that tell you?',
+  opts:[
+   {t:'You made an arithmetic mistake — every real matrix has real eigenvectors.',correct:false,
+    fb:'This is the gap talking. A genuine rotation turns every direction, so there is NO real line it leaves fixed — complex eigenvalues are the correct, meaningful answer, not an error.'},
+   {t:'The transformation turns every direction, so it has no real eigenvectors.',correct:true,
+    fb:'Exactly. Complex eigenvalues are the algebra telling you "nothing stays on its own line" — which is just what a rotation does.'},
+   {t:'The matrix isn’t invertible.',correct:false,
+    fb:'Unrelated — invertibility is about the determinant (whether any direction collapses to zero), not about eigenvalues being complex.'}]},
+ {q:'Why do we bother finding eigenvectors at all?',
+  opts:[
+   {t:'They’re the directions along which the transformation acts as plain multiplication, so it becomes simple.',correct:true,
+    fb:'Yes — in eigen-directions a messy transformation is just "scale by λ." That’s why they power diagonalisation, stability analysis, PCA, normal modes, quantum states…'},
+   {t:'They’re whatever vector makes the determinant zero.',correct:false,
+    fb:'That mixes two ideas. \\(\\det(A-\\lambda I)=0\\) finds the eigenvalues λ; the eigenvector is then the direction A leaves on its own line — it’s about the picture, not the determinant by itself.'},
+   {t:'They’re just a step you have to do to pass the exam.',correct:false,
+    fb:'That’s how it feels when the picture is missing — but once you see "directions that stay put," they’re the most useful handle on a transformation you have.'}]}
+];
+const quiz=document.getElementById('quiz');
+questions.forEach((Q,i)=>{
+  const wrap=document.createElement('div');wrap.className='q';
+  wrap.innerHTML=`<p><strong>Q${i+1}.</strong> ${Q.q}</p>`;
+  const opts=document.createElement('div');opts.className='opts';
+  const fb=document.createElement('div');fb.className='fb';
+  Q.opts.forEach(o=>{
+    const b=document.createElement('button');b.className='opt';b.innerHTML=o.t;
+    b.onclick=()=>{
+      [...opts.children].forEach(c=>{c.disabled=true;c.classList.remove('correct','wrong');});
+      b.classList.add(o.correct?'correct':'wrong');
+      // also highlight the right one if they missed
+      if(!o.correct){const idx=Q.opts.findIndex(x=>x.correct);opts.children[idx].classList.add('correct');}
+      fb.className='fb show '+(o.correct?'good':'bad');fb.innerHTML=o.fb;
+      if(window.MathJax&&MathJax.typesetPromise)MathJax.typesetPromise([fb]);
+    };
+    opts.appendChild(b);
+  });
+  wrap.appendChild(opts);wrap.appendChild(fb);quiz.appendChild(wrap);
+});
+
+/* ---------- transfer challenge ---------- */
+const tOpts=[
+ {t:'\\((1,0)\\)',correct:true,fb:'Correct. \\(M(1,0)=(3,0)=3(1,0)\\) — it stays exactly on its line (λ=3).'},
+ {t:'\\((1,1)\\)',correct:false,fb:'The tempting trap. \\(M(1,1)=(4,2)\\), which points a different way — it got turned, so it is NOT an eigenvector even though it looks tidy.'},
+ {t:'\\((0,1)\\)',correct:false,fb:'\\(M(0,1)=(1,2)\\) — not a multiple of \\((0,1)\\), so it’s knocked off its line. Not an eigenvector.'}
+];
+const tWrap=document.getElementById('transfer'),tfb=document.getElementById('tfb');
+tOpts.forEach(o=>{const b=document.createElement('button');b.className='opt';b.innerHTML=o.t;
+  b.onclick=()=>{[...tWrap.children].forEach(c=>{c.disabled=true;c.classList.remove('correct','wrong');});
+    b.classList.add(o.correct?'correct':'wrong');
+    if(!o.correct){const idx=tOpts.findIndex(x=>x.correct);tWrap.children[idx].classList.add('correct');}
+    tfb.className='fb show '+(o.correct?'good':'bad');tfb.innerHTML=o.fb;
+    if(window.MathJax&&MathJax.typesetPromise)MathJax.typesetPromise([tfb]);};
+  tWrap.appendChild(b);});
+</script>
+</body>
+</html>

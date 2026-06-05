@@ -1,0 +1,23 @@
+{
+  "skill_name": "learning-map",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "I keep getting confused by eigenvectors. I've read the definition like five times and I can do the determinant calculation to find them but I genuinely don't understand what they ARE or why anyone cares. Can you help me actually get it?",
+      "expected_output": "Skill diagnoses before teaching: asks 2-4 prerequisite questions (e.g. what a matrix does to a vector, what a basis is) to locate the root gap rather than re-explaining the definition. Identifies a specific gap (likely a brittle procedure / missing geometric model of matrices as transformations), confirms it with the learner, then teaches surgically anchored to what they know. Closes with a transfer check and offers a saved understanding-map artifact.",
+      "files": []
+    },
+    {
+      "id": 1,
+      "prompt": "my 9th grader is stuck on why 1/2 divided by 1/4 equals 2 and not 1/8. she keeps saying dividing should make things smaller. how do I explain it",
+      "expected_output": "Recognises the stated symptom ('dividing makes things smaller') as a misconception to trace, not just a fact to correct. Probes the learner's/child's underlying model of what division means, names the root misconception (division as 'making smaller' rather than 'how many of these fit into that'), and builds a concrete, age-appropriate lesson around it with a check. Pitched to a parent/young learner level, not a university level.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Help me understand why my antiprotonic helium transition frequency fit keeps giving a systematically low chi-squared. I'm a physics PhD student and I feel like I'm missing something conceptual about reduced chi-squared, not just a coding bug.",
+      "expected_output": "Uses the learner's stated expertise (PhD) and context to calibrate depth upward. Diagnoses whether the gap is conceptual (e.g. conflating chi-squared with reduced chi-squared, misunderstanding what low reduced chi-squared implies about error estimates / overfitting) via targeted questions before explaining. Treats the surface symptom as downstream of a precise conceptual gap, teaches at an appropriate level, and offers a saved artifact. Does not condescend or over-explain basics the learner already holds.",
+      "files": []
+    }
+  ]
+}
