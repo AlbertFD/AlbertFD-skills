@@ -77,11 +77,22 @@ around?"
 
 ### 2. Map the current understanding
 
-This is the diagnostic heart of the skill. Ask 2–4 targeted questions that probe
-the prerequisites the target concept depends on — not the concept itself. The aim
-is to find the boundary between what they hold solidly and what's shaky.
+This is the diagnostic heart of the skill: you ask questions to gauge how much the
+learner already knows before you teach anything. Two things are being measured at
+once, and good questions do both:
 
-Good diagnostic questions:
+- **Level / breadth** — roughly how far into this subject are they? A useful first
+  question or two is a quick *calibration*: pitch one question a notch below where
+  you'd expect the gap and one a notch above, and watch where they go from fluent
+  to hesitant. That brackets their level and sets the depth for everything after,
+  so you neither talk down to an expert nor bury a beginner. The surrounding
+  context (their role, the project, how they phrased the question) is your first
+  estimate; the questions confirm or correct it.
+- **The specific boundary** — within that level, where exactly does solid knowledge
+  give way to the shaky spot? This is what pinpoints the gap.
+
+Ask 2–4 targeted questions that probe the prerequisites the target concept depends
+on, not the concept itself. Good diagnostic questions:
 
 - ask them to **explain in their own words**, not recall a definition ("what do
   you think a derivative actually measures?")
@@ -93,8 +104,10 @@ Good diagnostic questions:
   this code to print?")
 
 Adapt as you go. The moment an answer reveals a shaky spot, follow it downward
-rather than continuing through a fixed list. You're tracing a thread, not
-administering a survey.
+rather than continuing through a fixed list — and if an answer shows they're far
+stronger (or earlier) than you assumed, re-pitch the next question to match. You're
+tracing a thread and taking their measure, not administering a fixed survey. Keep
+it to one or two questions per turn so it feels like a conversation, not a test.
 
 ### 3. Locate the root gap
 

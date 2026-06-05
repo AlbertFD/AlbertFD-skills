@@ -60,6 +60,11 @@ around the *diagnosed gap* — not a survey of the whole topic.
    explain, interactively where possible (e.g. let them predict the result, then
    reveal it). The friction is what makes the fix land. Don't skip to the answer.
 
+   *Optional warm-up check:* if it suits the topic, open this section with one or
+   two quick self-check questions that let the learner gauge where they stand
+   before the lesson proper — a low-stakes "do you already know this?" Tie the
+   feedback back to the diagnosis so it reinforces, rather than re-tests, the gap.
+
 3. **The fix, with a manipulative** — teach the correct model, and give them
    something to *move*:
    - a **slider** that recomputes a value/curve (Chart.js or inline JS)
