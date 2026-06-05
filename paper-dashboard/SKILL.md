@@ -93,7 +93,7 @@ Mirror the example. A complete dashboard has:
 - **Overview** — what the paper achieved (a `lead` paragraph), a two-card "what it is / why it matters", and the headline results as colored callout boxes. This is the part everyone reads, so make it genuinely informative. Apply inline provenance flags to any non-paper claim.
 - **The Physics / Methods & Equations** — each governing equation in an `.eq` block (MathJax), followed by a row of `.term` cards defining every symbol, plus callouts explaining *why* the equation matters. Use step blocks or a small energy-level/diagram layout where the paper's logic is sequential or structural. Flag any term value or equation parameter that comes from domain knowledge rather than the paper.
 - **The Experiment / Approach** — the apparatus or methodology as numbered `.step` stages, with callouts for the central difficulty and the clever trick that beats it. Flag any apparatus detail (crystal type, geometry, dimensions) that is inferred or from secondary sources.
-- **Results & Data** — rebuild the paper's figures as Chart.js canvases. Each chart sits in a `.chartbox` with a caption and a `.note`. **Crucial honesty rule:** plot quantitative values quoted in the text *exactly*, and where you can only approximate a published curve, label it "schematic reconstruction" in the caption. Never present an invented curve as the real data. Flag data points from secondary sources in the caption.
+- **Results & Data** — rebuild the paper's figures as Chart.js canvases. Each chart sits in a `.chartbox` with a caption and a `.note`. **Crucial honesty rule:** plot quantitative values quoted in the text *exactly*, and where you can only approximate a published curve, label it "schematic reconstruction" in the caption. Never present an invented curve as the real data. Flag data points from secondary sources in the caption. **Before coding each canvas, open the corresponding figure and match its axes — see "Reconstructing figures faithfully" below. This is mandatory, not optional.**
 - **Glossary** — define every term in the `glossary` JS array; cards are injected and expand on click. Write real, substantive definitions (2-4 sentences) at the paper's technical level, not dictionary one-liners. If a definition includes details not in the paper (crystal properties, typical values, physical reasoning), say so within the definition.
 - **References** — the paper's own reference list, each with a one-line note on what it contributes. Optionally a curated "what this enabled since" section — but only with citations you have actually verified (see Verification).
 
@@ -115,6 +115,24 @@ Mirror the example. A complete dashboard has:
 
 **`<script>`** — tab switching (build charts lazily when the Results tab first opens; re-run `MathJax.typesetPromise()` on tab change), the glossary array + injection loop, and the `buildCharts()` function. The example's JS is a working starting point — adapt the data, keep the mechanics.
 
+## Reconstructing figures faithfully
+
+A reconstructed chart is only useful if it can be laid **side-by-side with the original figure** and read on the same terms. A chart that shows roughly the right trend but on invented axes is misleading — it looks authoritative while quietly disagreeing with the paper. So for **every** chart, before you write any Chart.js code:
+
+1. **Open the actual figure.** Locate the specific figure in the paper that the chart reconstructs — the PDF page, the arXiv HTML `<img>`, or the rendered image. Look at it directly (read the image; on a client-rendered page use the browser tools to view it). Do not reconstruct a figure you have not actually looked at.
+
+2. **Copy the axes verbatim onto the Chart.js `scales`:**
+   - **Ranges** — read the min and max of each axis off the figure and set `scales.x.min/max` and `scales.y.min/max` to those exact bounds (use `suggestedMin/Max` only if the paper's bounds are genuinely open-ended). Do not let Chart.js auto-scale to your data — that produces different bounds than the paper and breaks side-by-side comparison.
+   - **Units and axis titles** — copy the axis labels and units exactly as printed (e.g. "Target density ρ (×10¹⁷ cm⁻³)", "BLEU", "Top-5 error (%)"). Match the multiplier/exponent convention the paper uses on the axis.
+   - **Scale type** — if the figure axis is logarithmic, set `type:'logarithmic'`; if linear, linear. Match it.
+   - **Tick labels** — reproduce the paper's tick positions/labels where it matters for reading the plot (e.g. the same x categories, the same gridline values).
+
+3. **Place your data points on those axes.** The exact values quoted in the text are plotted at their true coordinates within the paper's ranges. If you are filling in the shape of a curve between quoted points, that interpolation is the *only* schematic part — say so in the caption, but the axes themselves are never schematic.
+
+4. **Sanity-check the result against the figure.** Glance from your chart to the original: do the points sit at the same place relative to the axes? Does a value the paper calls "an order of magnitude lower" actually render an order of magnitude lower? Does the trend go the same direction? If the reconstruction and the figure disagree, the reconstruction is wrong — fix the data or the scales, don't ship it.
+
+If a figure's underlying numbers genuinely cannot be read (no quoted values, unreadable image), it is better to omit that chart, or render only the axes with a clear "values not recoverable from the source" note, than to fabricate points.
+
 ## Principles that make these good
 
 **Faithfulness over polish.** The whole value is that a researcher can rely on it. Every number, symbol definition, and reference must trace to the paper. If you don't know something, say "not stated by the authors" rather than guessing — an honest gap is fine, a confident fabrication is not.
@@ -135,6 +153,7 @@ Before delivering, check:
 - **Syntax-check the JavaScript** — extract the main `<script>` block and run `node --check` on it. A single stray character breaks the whole script, silently disabling tab switching and charts. The most common culprit is an apostrophe inside a single-quoted string in the `glossary` array (e.g. `'the ion's lifetime'`): use a typographic apostrophe (') or escape with `\'`, and prefer template literals or double quotes for text containing apostrophes. Always verify before delivering.
 - Scan every tab for bare ⚠/🔍 claims — any claim not from the paper that lacks an inline flag should be flagged or removed.
 - Spot-check that every number in the hero key-facts and charts appears in the source text (or is explicitly flagged if it does not).
+- **Check each chart against its figure.** For every canvas, confirm you opened the real figure and that the Chart.js `scales` carry the paper's exact axis ranges, units, scale type (lin/log), and tick labels — so the reconstruction could be laid directly over the original. Verify the plotted points land where the figure puts them and the trend direction matches. A chart on auto-scaled or invented axes is a defect.
 - Confirm equations render (valid MathJax/LaTeX) and every symbol in each equation has a term card.
 - If you added outside citations, confirm each one resolves to a real paper.
 
