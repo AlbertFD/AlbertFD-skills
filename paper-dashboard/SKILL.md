@@ -44,6 +44,40 @@ Build a single, self-contained HTML file that turns a research paper into an int
 
 Prefer your built-in web tools for remote papers — they handle JavaScript and redirects better than a raw script.
 
+## Source provenance: the core discipline
+
+Before writing a single sentence of dashboard content, mentally tag every claim with one of four provenance levels:
+
+- **✅ Paper** — stated in the paper you are summarising (abstract or full text). This is the only tier that can be stated as fact without qualification.
+- **📄 Cited paper** — stated in a different verified publication (a follow-up, a review, a cited reference). Accurate but not *this* paper.
+- **⚠ Secondary source** — came from a search-engine snippet, abstract database, Wikipedia, or any summary you cannot trace back to primary text. Treat as unverified.
+- **🔍 Inferred** — derived by calculation, physical argument, or domain knowledge from confirmed numbers. May be very likely correct but is not stated anywhere.
+
+**This tagging must appear in two places:**
+
+### 1. Inline, at the point of use
+
+Whenever a ⚠ or 🔍 claim appears in the dashboard prose — in any tab, in any callout, in any term card, in any glossary definition, in any chart caption — add a short parenthetical flag immediately after it. Do not let a secondary-source or inferred claim stand bare as if it came from the paper.
+
+Use consistent inline markers:
+- `(reported in secondary sources — see ⚠ Source Check)` for ⚠ claims
+- `(inferred — see ⚠ Source Check)` for 🔍 claims
+- `(from [Author Year], not this paper)` for 📄 claims
+
+The goal is that a researcher skimming any tab can immediately see which claims need verification, without having to cross-reference the Source Check tab. The Source Check tab provides the detail; the inline flag provides the warning.
+
+### 2. Comprehensively, in the ⚠ Source Check tab
+
+Every claim — including ✅ ones — is catalogued in the Source Check table. See the tab description below.
+
+**Common traps to avoid:**
+- Inferring the EOM crystal type (e.g. "Pockels cell", "KD*P") from domain knowledge when the paper says only "electro-optic modulator" — that is a 🔍 inference, flag it.
+- Inferring the pulse duration from the Fourier limit — 🔍 inference, flag it.
+- Citing a wavelength range from a follow-up paper as if it came from this one — 📄, flag it.
+- Calling a technique by its common name when the paper uses a more general term — check whether the specific name is in the paper before using it bare.
+
+The discipline is simple: if you did not read it in this paper, it does not get to masquerade as if you did.
+
 ## Dashboard structure
 
 Mirror the example. A complete dashboard has:
@@ -52,30 +86,30 @@ Mirror the example. A complete dashboard has:
 
 **Pick a fresh, randomized palette for every dashboard** so two dashboards never look identical. Run `python scripts/palette.py` (optionally with a seed) — it prints CSS-ready accent variables, a hero gradient, and the matching Chart.js `COL` object. Paste those into the `:root` block, the `header.hero` gradient, and the JS `COL`. Drive *all* colors (including per-bar `backgroundColor` arrays in charts) from the `--proton`/`--anti`/`--he` variables and `COL`, so swapping the palette restyles the whole page consistently. Re-run the script to reroll if a palette clashes with the paper's subject, but don't hand-pick the same indigo/teal every time — variety is the point.
 
-**Hero header** — gradient banner with: category pills (venue, group/lab, topic), the paper title, the author list, the full citation with DOI, and a 4-cell "key facts" grid of the most striking numbers. Optionally a small thematic SVG.
+**Hero header** — gradient banner with: category pills (venue, group/lab, topic), the paper title, the author list, the full citation with DOI, and a 4-cell "key facts" grid of the most striking numbers. Optionally a small thematic SVG. Only put ✅ Paper values in the hero key-facts; flag any 📄/⚠/🔍 values with a small superscript or note.
 
 **Sticky tab nav + tab panes.** Default tabs, adapt to the paper:
 
-- **Overview** — what the paper achieved (a `lead` paragraph), a two-card "what it is / why it matters", and the headline results as colored callout boxes. This is the part everyone reads, so make it genuinely informative.
-- **The Physics / Methods & Equations** — each governing equation in an `.eq` block (MathJax), followed by a row of `.term` cards defining every symbol, plus callouts explaining *why* the equation matters. Use step blocks or a small energy-level/diagram layout where the paper's logic is sequential or structural.
-- **The Experiment / Approach** — the apparatus or methodology as numbered `.step` stages, with callouts for the central difficulty and the clever trick that beats it.
-- **Results & Data** — rebuild the paper's figures as Chart.js canvases. Each chart sits in a `.chartbox` with a caption and a `.note`. **Crucial honesty rule:** plot quantitative values quoted in the text *exactly*, and where you can only approximate a published curve, label it "schematic reconstruction" in the caption. Never present an invented curve as the real data.
-- **Glossary** — define every term in the `glossary` JS array; cards are injected and expand on click. Write real, substantive definitions (2-4 sentences) at the paper's technical level, not dictionary one-liners.
+- **Overview** — what the paper achieved (a `lead` paragraph), a two-card "what it is / why it matters", and the headline results as colored callout boxes. This is the part everyone reads, so make it genuinely informative. Apply inline provenance flags to any non-paper claim.
+- **The Physics / Methods & Equations** — each governing equation in an `.eq` block (MathJax), followed by a row of `.term` cards defining every symbol, plus callouts explaining *why* the equation matters. Use step blocks or a small energy-level/diagram layout where the paper's logic is sequential or structural. Flag any term value or equation parameter that comes from domain knowledge rather than the paper.
+- **The Experiment / Approach** — the apparatus or methodology as numbered `.step` stages, with callouts for the central difficulty and the clever trick that beats it. Flag any apparatus detail (crystal type, geometry, dimensions) that is inferred or from secondary sources.
+- **Results & Data** — rebuild the paper's figures as Chart.js canvases. Each chart sits in a `.chartbox` with a caption and a `.note`. **Crucial honesty rule:** plot quantitative values quoted in the text *exactly*, and where you can only approximate a published curve, label it "schematic reconstruction" in the caption. Never present an invented curve as the real data. Flag data points from secondary sources in the caption.
+- **Glossary** — define every term in the `glossary` JS array; cards are injected and expand on click. Write real, substantive definitions (2-4 sentences) at the paper's technical level, not dictionary one-liners. If a definition includes details not in the paper (crystal properties, typical values, physical reasoning), say so within the definition.
 - **References** — the paper's own reference list, each with a one-line note on what it contributes. Optionally a curated "what this enabled since" section — but only with citations you have actually verified (see Verification).
 
-- **⚠ Source Check** *(always include, regardless of depth level)* — a transparency table that catalogs every factual claim in the dashboard by how strongly it is evidenced. This tab exists because dashboards are research artifacts: a single confidently-stated but unverified number can mislead a researcher. Being honest about uncertainty is more valuable than hiding it.
+- **⚠ Source Check** *(always include, regardless of depth level)* — a transparency table that catalogs every factual claim in the dashboard by provenance. This tab is the backstop: it provides full detail on every claim that was flagged inline, and also documents the ✅ claims so a reader can see the complete picture.
 
-  Use four status levels, each with a distinct colour drawn from the palette variables so they are visually scannable:
-  - **✅ Abstract / Full text** — quoted or directly paraphrasable from the paper itself.
-  - **📄 Cited paper** — stated in a different verified publication in the reference chain (e.g., a follow-up paper by the same group).
-  - **⚠ Secondary source** — came from a search-engine snippet, abstract database, or web summary that could not be verified against the full text. Common when the paper is paywalled.
-  - **🔍 Inferred** — derived by calculation or physical argument from confirmed numbers; not stated explicitly anywhere.
+  Use the same four status levels as above, each rendered with a distinct coloured badge:
+  - `✅ Paper` — from the paper itself (abstract or full text)
+  - `📄 Cited paper` — from a different verified publication
+  - `⚠ Secondary source` — from an unverified summary or snippet
+  - `🔍 Inferred` — derived by calculation or physical argument
 
-  Build this as an HTML table with columns: Claim | Status | Detail. Populate it with every claim in the dashboard that could be wrong: hero key-facts, equation symbol values, experimental parameters, chart data points, and any detail that came from secondary sources rather than the paper itself. Do not silently promote an uncertain claim to "from the paper" — that defeats the purpose. The detail column should say exactly where the claim came from and what would need to be checked to confirm it.
+  Build this as an HTML table with columns: **Claim | Status | Detail**. The Detail column must say exactly where the claim came from and what a reader would need to check to confirm it. Populate it with *every* claim: hero key-facts, equation symbol values, experimental parameters, chart data points, glossary details, and any technique name that goes beyond what the paper states.
 
-  Add a callout at the bottom with a direct link to the full text (DOI URL) so the reader knows exactly where to resolve outstanding ⚠ items.
+  Add a callout at the bottom with a direct link to the full text (DOI URL) and, if the paper is paywalled, a note about how the reader might access it.
 
-  Wire this tab into the tab-switching JS like the others (re-run MathJax.typesetPromise() on tab open). Give the nav button a warning prefix — e.g. "⚠ Source Check" — so it is visually distinct and signals this is a meta-transparency tab, not a content tab.
+  Wire this tab into the tab-switching JS (re-run `MathJax.typesetPromise()` on tab open). Give the nav button a warning prefix — e.g. "⚠ Source Check" — so it is visually distinct from content tabs.
 
 **Footer** — one line crediting the source paper and noting that charts reconstruct published figures and equations render with MathJax.
 
@@ -85,20 +119,22 @@ Mirror the example. A complete dashboard has:
 
 **Faithfulness over polish.** The whole value is that a researcher can rely on it. Every number, symbol definition, and reference must trace to the paper. If you don't know something, say "not stated by the authors" rather than guessing — an honest gap is fine, a confident fabrication is not.
 
+**Flag at the point of use, not just in a separate tab.** The Source Check tab is comprehensive, but a researcher skimming the Physics tab should not have to navigate away to discover that a key parameter is inferred rather than measured. Put the flag where the claim is.
+
 **Label reconstructions.** Charts are almost always rebuilt from reported values, not the original data files. Say so in the caption. Distinguish "values quoted exactly in the text" from "schematic of the trend" so the reader knows what to trust.
 
 **Explain the why.** The term cards and callouts should explain *why* an equation or design choice matters, not just restate it. That is what turns a summary into an explainer.
 
-**Verify added citations.** If you include a "current literature / what this enabled" section, every entry must be a real paper you've confirmed exists (correct title, venue, year, DOI) via web search — do not generate plausible-looking citations. A single hallucinated reference undermines the whole artifact. Note in the footer when/how citations were verified.
+**Verify added citations.** If you include a "current literature / what this enabled" section, every entry must be a real paper you have confirmed exists (correct title, venue, year, DOI) via web search — do not generate plausible-looking citations. A single hallucinated reference undermines the whole artifact. Note in the footer when/how citations were verified.
 
 **Self-contained.** One HTML file, CDN scripts only (MathJax, Chart.js). It must open and work by double-clicking, offline-friendly except for the two CDN libs.
 
 ## Verification
 
 Before delivering, check:
-- **Syntax-check the JavaScript** — extract the main `<script>` block and run `node --check` on it. A single stray character breaks the whole script, silently disabling tab switching and charts. The most common culprit is an apostrophe inside a single-quoted string in the `glossary` array (e.g. `'the ion's lifetime'` or a doubled `''`): use a typographic apostrophe (’) or escape with `\'`, and prefer template literals or double quotes for text containing apostrophes. Always verify before delivering.
-- Open/parse the HTML; confirm there are no obvious script errors and tabs/charts are wired up.
-- Spot-check that every number in the hero key-facts and charts appears in the source text.
+- **Syntax-check the JavaScript** — extract the main `<script>` block and run `node --check` on it. A single stray character breaks the whole script, silently disabling tab switching and charts. The most common culprit is an apostrophe inside a single-quoted string in the `glossary` array (e.g. `'the ion's lifetime'`): use a typographic apostrophe (') or escape with `\'`, and prefer template literals or double quotes for text containing apostrophes. Always verify before delivering.
+- Scan every tab for bare ⚠/🔍 claims — any claim not from the paper that lacks an inline flag should be flagged or removed.
+- Spot-check that every number in the hero key-facts and charts appears in the source text (or is explicitly flagged if it does not).
 - Confirm equations render (valid MathJax/LaTeX) and every symbol in each equation has a term card.
 - If you added outside citations, confirm each one resolves to a real paper.
 
