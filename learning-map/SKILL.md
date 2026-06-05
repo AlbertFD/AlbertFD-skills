@@ -3,8 +3,8 @@ name: learning-map
 description: >-
   Diagnose what a learner misunderstands and teach from there. Use whenever
   someone is confused, stuck, "not getting" a concept, keeps making the same
-  mistake, asks you to re-explain something, or wants to truly understand a topic
-  rather than just get an answer. Trigger on phrases like "I don't
+  mistake, asks you to re-explain something, or wants to understand a topic rather
+  than just get an answer. Trigger on phrases like "I don't
   understand X", "explain X again", "I keep getting this wrong", "help me learn
   X", "tutor me on X", "walk me through why", or any request to build a lesson
   around a point of confusion. It maps what the learner knows, traces the
@@ -12,9 +12,9 @@ description: >-
   the symptom), then produces two things: a saved "understanding map" and a
   self-contained interactive HTML lesson built around that exact gap, with a
   manipulative, predict-then-check steps, and practice whose wrong answers are the
-  learner's own misconception. Uses surrounding context (project, files, memory)
-  so it fits what they're working on. Prefer it over a one-off explanation when
-  the goal is durable understanding.
+  learner's misconception. Uses surrounding context (project, files, memory) so it
+  fits what they're working on. Prefer it over a one-off explanation when the goal
+  is durable understanding.
 ---
 
 # Learning Map
