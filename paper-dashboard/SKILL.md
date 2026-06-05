@@ -63,6 +63,20 @@ Mirror the example. A complete dashboard has:
 - **Glossary** — define every term in the `glossary` JS array; cards are injected and expand on click. Write real, substantive definitions (2-4 sentences) at the paper's technical level, not dictionary one-liners.
 - **References** — the paper's own reference list, each with a one-line note on what it contributes. Optionally a curated "what this enabled since" section — but only with citations you have actually verified (see Verification).
 
+- **⚠ Source Check** *(always include, regardless of depth level)* — a transparency table that catalogs every factual claim in the dashboard by how strongly it is evidenced. This tab exists because dashboards are research artifacts: a single confidently-stated but unverified number can mislead a researcher. Being honest about uncertainty is more valuable than hiding it.
+
+  Use four status levels, each with a distinct colour drawn from the palette variables so they are visually scannable:
+  - **✅ Abstract / Full text** — quoted or directly paraphrasable from the paper itself.
+  - **📄 Cited paper** — stated in a different verified publication in the reference chain (e.g., a follow-up paper by the same group).
+  - **⚠ Secondary source** — came from a search-engine snippet, abstract database, or web summary that could not be verified against the full text. Common when the paper is paywalled.
+  - **🔍 Inferred** — derived by calculation or physical argument from confirmed numbers; not stated explicitly anywhere.
+
+  Build this as an HTML table with columns: Claim | Status | Detail. Populate it with every claim in the dashboard that could be wrong: hero key-facts, equation symbol values, experimental parameters, chart data points, and any detail that came from secondary sources rather than the paper itself. Do not silently promote an uncertain claim to "from the paper" — that defeats the purpose. The detail column should say exactly where the claim came from and what would need to be checked to confirm it.
+
+  Add a callout at the bottom with a direct link to the full text (DOI URL) so the reader knows exactly where to resolve outstanding ⚠ items.
+
+  Wire this tab into the tab-switching JS like the others (re-run MathJax.typesetPromise() on tab open). Give the nav button a warning prefix — e.g. "⚠ Source Check" — so it is visually distinct and signals this is a meta-transparency tab, not a content tab.
+
 **Footer** — one line crediting the source paper and noting that charts reconstruct published figures and equations render with MathJax.
 
 **`<script>`** — tab switching (build charts lazily when the Results tab first opens; re-run `MathJax.typesetPromise()` on tab change), the glossary array + injection loop, and the `buildCharts()` function. The example's JS is a working starting point — adapt the data, keep the mechanics.

@@ -7,9 +7,9 @@ reconstructions of the paper's figures, an expandable glossary, and annotated re
 ## What it does
 
 Hand it a paper as a **PDF, arXiv link/ID, DOI, or journal URL** and it produces a single
-HTML file you can open in any browser. The dashboard typically has six tabs: Overview,
-Architecture/Physics & Equations, Experiment/Approach, Results & Data, Glossary, and
-References.
+HTML file you can open in any browser. The dashboard has seven tabs: Overview,
+Architecture/Physics & Equations, Experiment/Approach, Results & Data, Glossary,
+References, and a **⚠ Source Check** transparency table.
 
 ## How it works
 
@@ -26,6 +26,7 @@ References.
 - **Faithfulness over polish** — every number, symbol, and reference traces to the paper.
 - **Labels reconstructions** — charts rebuilt from reported values are marked schematic; values quoted in the text are plotted exactly.
 - **No fabricated citations** — any "further reading" entries are real papers, verified.
+- **Transparent sourcing** — the ⚠ Source Check tab catalogs every factual claim with one of four evidence levels (✅ from the paper / 📄 cited paper / ⚠ secondary source / 🔍 inferred), so a researcher knows exactly what to pressure-test.
 - **Self-contained** — one HTML file, only MathJax and Chart.js loaded from CDN.
 
 ## Files
