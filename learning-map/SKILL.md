@@ -1,24 +1,20 @@
 ---
 name: learning-map
 description: >-
-  Diagnose what a learner actually misunderstands and teach from there. Use this
+  Diagnose what a learner actually misunderstands and teach from there. Use
   whenever someone is confused, stuck, "not getting" a concept, keeps making the
-  same mistake, asks you to explain something they've already been taught, or
-  wants to genuinely understand a topic rather than just get an answer. Trigger
-  on phrases like "I don't understand X", "why doesn't this make sense", "can you
-  explain X again", "I keep getting this wrong", "help me learn / study X",
-  "tutor me on X", "I'm confused about", "walk me through why", or any request to
-  build a lesson, study plan, or explainer around a specific point of confusion.
-  The skill maps what the learner already knows, traces the confusion to its
-  root cause (the specific misconception or missing prerequisite underneath the
-  surface symptom), then produces two things: a saved "understanding map" of the
-  diagnosis and a self-contained interactive HTML lesson built around that exact
-  gap — with manipulatives, predict-then-check steps, and graded practice whose
-  wrong answers are the learner's actual misconception. It draws on the
-  surrounding context — the current project, the ongoing conversation, uploaded
-  files, and memory — so the diagnosis fits what the learner is actually working
-  on. Prefer this over a one-off explanation whenever the goal is durable
-  understanding, not a quick answer.
+  same mistake, asks you to re-explain something, or wants to truly understand a
+  topic rather than just get an answer. Trigger on phrases like "I don't
+  understand X", "explain X again", "I keep getting this wrong", "help me learn
+  X", "tutor me on X", "walk me through why", or any request to build a lesson
+  around a point of confusion. It maps what the learner knows, traces the
+  confusion to its root (the specific misconception or missing prerequisite under
+  the symptom), then produces two things: a saved "understanding map" and a
+  self-contained interactive HTML lesson built around that exact gap, with a
+  manipulative, predict-then-check steps, and practice whose wrong answers are the
+  learner's own misconception. Uses surrounding context (project, files, memory)
+  so it fits what they're working on. Prefer it over a one-off explanation when
+  the goal is durable understanding.
 ---
 
 # Learning Map
