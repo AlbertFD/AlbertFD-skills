@@ -15,3 +15,11 @@ See each skill's own README for full details.
 Create a folder named after the skill with a `SKILL.md` inside (YAML frontmatter:
 `name`, `description`), plus `scripts/` and `assets/` as needed. Add a one-line summary to
 the list above.
+
+## Building installable packages
+
+Run `./build.sh` to package every skill folder into an installable `.skill` file under
+`build/`. Pass a name to build just one (e.g. `./build.sh paper-dashboard`). A `.skill`
+file is a zip of the skill folder that renders with a one-click "Save skill" install
+button. The `build/` folder is a build artifact and is gitignored — regenerate it with
+`build.sh` rather than committing it.
