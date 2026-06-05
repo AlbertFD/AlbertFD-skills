@@ -6,7 +6,7 @@ Repo: https://github.com/AlbertFD/AlbertFD-skills
 
 ## Skills
 
-- **[paper-dashboard](paper-dashboard/)** — Turns a research paper (PDF, arXiv, DOI, or journal URL) into a self-contained interactive HTML dashboard: tabbed sections, MathJax equations explained term-by-term, Chart.js figure reconstructions, a glossary, and annotated references. Asks for depth (Quick / Standard / Deep) before building.
+- **[paper-dashboard](paper-dashboard/)** — Turns a research paper (PDF, arXiv, DOI, or journal URL) into a self-contained interactive HTML dashboard: tabbed sections, MathJax equations explained term-by-term, Chart.js figure reconstructions, a glossary, annotated references, and a ⚠ Source Check transparency table (✅ full text / 📄 cited paper / ⚠ secondary source / 🔍 inferred). Asks for depth (Quick / Standard / Deep) before building.
 
 See each skill's own README for full details.
 

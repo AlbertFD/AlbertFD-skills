@@ -6,3 +6,6 @@ node_modules/
 
 # eval run artifacts (local only)
 paper-dashboard-workspace/
+
+# packaged skill files (build artifacts)
+*.skill
