@@ -11,9 +11,12 @@ checkpointed stages** — structure → core elements → labels → interactivi
 at each so you can steer. The pauses are the point: a diagram forces precision a
 paragraph can hide, so building it together is where the explanation gets sharp.
 
-Output is one openable HTML file (inline CSS/JS; CDN only for MathJax/Chart.js) sized
-for its medium — a talk slide, a paper figure, a teaching aid, or your own
-understanding.
+Output is one **offline-first** HTML file — all CSS and JS inlined, equations rendered
+in plain HTML/CSS (no MathJax/CDN to fail in locked-down or offline environments),
+sized for its medium: a talk slide, a paper figure, a teaching aid, or your own
+understanding. Before delivering, it runs a **source-fidelity check** — comparing the
+finished visual against your original element by element and flagging any deliberate
+departures.
 
 ## When it triggers
 
@@ -29,4 +32,6 @@ misconception. `living-sketch` is for a focused, articulate visual of one concep
 
 - `SKILL.md` — the workflow (intake → context → plan → staged build → verify → present).
 - `references/html-patterns.md` — toolbox: CSS design system, SVG diagram primitives,
-  hover-reveal, staged build-up, step-through, pan/zoom, MathJax, Chart.js, print/export.
+  dependency-free HTML/CSS equations (with sizing + alignment rules), hover-reveal,
+  staged build-up, step-through, figure↔step cue syncing, pan/zoom, fit-the-viewport,
+  print/export.
