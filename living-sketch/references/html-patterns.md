@@ -205,12 +205,20 @@ Write `\( E_n = -\tfrac{R}{n^2} \)` inline. After dynamically revealing any elem
 
 ```css
 .eqpanel{ font-size:14px; }                         /* the text the math sits in   */
-.eqpanel mjx-container{ font-size:92%!important; }   /* nudge MathJax down to match */
+.eqpanel mjx-container{ font-size:88%!important; }   /* nudge MathJax down to match */
 .eqpanel mjx-container[display="true"]{ margin:4px 0; text-align:left!important; }
 .eqpanel .step{ overflow-x:auto; }                   /* long lines scroll, not break */
 ```
 
-Tune per medium: a talk slide can go a little larger (the *current* revealed line ~16–18px, dimmed neighbours smaller); a paper figure or teaching aid wants it near body size. If an equation is wide, split it across two `\[...\]` lines or use `\tfrac`/`\dfrac` deliberately rather than letting one line blow out the width. The instinct to make math "prominent" overshoots — err small, then enlarge only if the user asks.
+**Keep every equation the same size — emphasize the current step with color, weight, or opacity, never a font bump.** It's tempting in a stepped derivation to enlarge the active line and shrink the neighbours, but that makes the panel jump around, reads as inconsistent, and the "big" line invariably ends up too big. Instead hold one uniform size for all equations and signal which step is live another way:
+
+```css
+.eq{ opacity:.2; }                 /* upcoming steps, dimmed   */
+.eq.shown{ opacity:.5; }           /* already covered          */
+.eq.cur{ opacity:1; color:var(--ink); font-weight:600; }  /* live step — same size */
+```
+
+If an equation is wide, split it across two `\[...\]` lines or use `\tfrac`/`\dfrac` deliberately rather than letting one line blow out the width. The instinct to make math "prominent" overshoots — err small and uniform, then enlarge everything together only if the user asks.
 
 ## 8. Chart.js (only when the point is data)
 
