@@ -199,16 +199,33 @@ addEventListener('pointermove', e=>{if(!drag)return;
 
 Only add pan/zoom when the figure genuinely needs it; for a slide it's usually clutter.
 
-## 7. MathJax equations
+## 7. Equations
 
-Use when real notation carries meaning (calibrate to depth — newcomers rarely need it).
+Use real notation only when it carries meaning (calibrate to depth — newcomers rarely need it).
+
+**Default to dependency-free HTML/CSS math — the CDN is not always reachable.** MathJax loads from a CDN, and in many environments (offline, locked-down networks, restricted desktop sandboxes) that fetch silently fails. When it does, the page shows the **raw LaTeX** (`\( ... \)`) in the browser's default serif at full size — which looks broken and oversized, and *no font-size rule will fix it* because there's no MathJax to size. This has bitten real builds. So for the handful of formulas a typical explainer needs, render them with plain inline HTML/CSS instead. It always works offline and you control the size to the pixel:
 
 ```html
-<script>MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']]}};</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.js" id="MathJax-script" async></script>
+<style>
+  .mline{font-family:Georgia,"Times New Roman",serif;font-size:14px;white-space:nowrap}
+  .mline .v{font-style:italic}                 /* variables: italic serif */
+  .fr{display:inline-flex;flex-direction:column;vertical-align:-0.45em;text-align:center;margin:0 .16em}
+  .fr>.nu{border-bottom:1.5px solid currentColor;padding:0 .3em}
+  .fr>.de{padding:0 .3em}
+  .mline sup,.mline sub{font-size:.72em}
+</style>
+<script>
+  const v=s=>`<span class="v">${s}</span>`;
+  const fr=(n,d)=>`<span class="fr"><span class="nu">${n}</span><span class="de">${d}</span></span>`;
+  const sq=s=>`${s}<sup>2</sup>`;
+  // C = εA/d  →
+  const eq = `<span class="mline">${v("C")} = ${fr(v("ε")+v("A"),v("d"))}</span>`;
+</script>
 ```
 
-Write `\( E_n = -\tfrac{R}{n^2} \)` inline. After dynamically revealing any element containing math, call `MathJax.typesetPromise()`. For an expert audience, break a key equation down term-by-term with small labelled cards.
+Greek and most symbols come from Unicode (ε, σ, κ, ℏ, ∇, ∫, ∑, →, ·, ×, ±). Subscripts/superscripts use `<sub>`/`<sup>`. This covers the large majority of explainer math cleanly.
+
+**Only reach for MathJax** when the math is genuinely heavy (multi-line alignments, matrices, big operators with limits) *and* you've confirmed the CDN is reachable in the target environment. If you do use it, set `MathJax={tex:{inlineMath:[['\\(','\\)']]}}` then load `tex-svg.js`, call `MathJax.typesetPromise()` after revealing math, and **size with an explicit px** as in the equation-sizing note above — and still verify it didn't fall back to raw LaTeX before delivering. If offline safety matters, pre-render the equations to SVG once and inline the SVG so there's no runtime dependency at all.
 
 **Default equation size — start modest, scale to the container.** MathJax display math renders large by default and almost always comes out *too big* the first time, forcing a round-trip. Don't ship raw default-size equations. Set a sensible default up front and let it ride at roughly body-text scale:
 

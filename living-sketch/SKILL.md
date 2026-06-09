@@ -77,8 +77,8 @@ You can compress stages if the visual is simple or the user says "just build it"
 
 ### How to build it well
 
-- **Self-contained, single HTML file.** Inline all CSS and JS. CDN allowed only for MathJax (`tex-svg.js`) and Chart.js; everything else inline so it opens by double-clicking, offline-friendly. No `localStorage`/`sessionStorage`.
-- **Prefer SVG for diagrams.** Hand-authored inline SVG gives you crisp, labelable, animatable shapes with full control — far better than canvas for explanatory diagrams. Use Chart.js only when the point is quantitative data. Use MathJax when real equations carry meaning.
+- **Self-contained and offline-first.** One HTML file with all CSS and JS inlined, so it opens by double-clicking. Don't assume a CDN is reachable — many environments (offline, locked-down networks, restricted desktop sandboxes) block it, and a failed CDN fetch breaks the visual silently. Render **equations with plain HTML/CSS** rather than CDN-loaded MathJax (see `references/html-patterns.md` §7); reserve MathJax/Chart.js for cases that truly need them, and only after confirming the CDN works in the target environment — otherwise inline a pre-rendered fallback. No `localStorage`/`sessionStorage`.
+- **Prefer SVG for diagrams.** Hand-authored inline SVG gives you crisp, labelable, animatable shapes with full control — far better than canvas for explanatory diagrams, and it needs no external library. Use Chart.js only when the point is quantitative data and the CDN is available.
 - **Drive all color from CSS custom properties** (see the design system in `references/html-patterns.md`) so the palette is consistent and easy to reroll. Don't hand-pick clashing colors per element.
 - **Let the interaction teach.** The best interactions externalize the explanation: a staged build-up shows causality in order; hover-reveal lets the viewer ask "what's this?" exactly when they wonder; a step-through narrates the logic one move at a time. Avoid interactivity that's just motion — every interaction should answer a question the viewer would actually have.
 - **Legibility is non-negotiable**, especially for the "talk slide" medium: large type, high contrast, generous spacing, nothing that vanishes against the background on a projector.
@@ -95,7 +95,7 @@ You can compress stages if the visual is simple or the user says "just build it"
 - **Check correctness of the content**, not just that it renders. The whole value is a *correct* explanation — a beautiful diagram of a wrong mechanism is worse than no diagram. Verify the relationships, the direction of every arrow/flow, the labels, units, and any numbers against the source. **Flag any claim you inferred or assumed rather than took from the source, so the user can pressure-test it** — an honest "I assumed the second stage feeds the third; confirm?" is far more valuable than a confident guess.
 - **Read it back at the chosen depth level.** Put yourself in the audience's shoes: would a newcomer actually follow this, or did jargon creep in? Would an expert find it patronizing or imprecise?
 - **Confirm it serves the one takeaway.** If an element doesn't help the viewer reach the key takeaway, cut it. Busy is the enemy of clear.
-- Confirm equations render (valid MathJax) and any chart's axes are honest (label reconstructions as such; never present invented data as real).
+- **Confirm equations actually render in the browser, not as raw LaTeX.** If you used MathJax, check it didn't silently fall back to showing `\( ... \)` because the CDN was blocked — if there's any doubt, switch to the dependency-free HTML/CSS math. Any chart's axes must be honest (label reconstructions as such; never present invented data as real).
 
 ## Step 5 — Save and present
 
@@ -113,4 +113,4 @@ Save the HTML file to the working folder and present it. In the message, restate
 
 **Flag your assumptions.** You will often have to infer a connection the source left implicit. That's fine — but mark it, so the user can confirm or correct. A flagged assumption invites the conversation that sharpens the explanation; a hidden one quietly ships an error.
 
-**Self-contained and openable.** One file, double-click to open, CDN only for MathJax/Chart.js. The user should be able to drop it into a talk, a folder, or an email without it breaking.
+**Self-contained and openable — assume no network.** One file, double-click to open, everything inlined. Don't depend on a CDN you haven't verified reaches the user's environment; render math as HTML/CSS so it can't break offline. The user should be able to drop it into a talk, a folder, or an email and have it just work.
