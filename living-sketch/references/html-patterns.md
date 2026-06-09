@@ -216,7 +216,7 @@ Size the math to **match the surrounding text** — equations should read as the
 
 ```css
 .eqpanel{ font-size:14px; }                            /* the prose it sits next to     */
-.eqpanel mjx-container{ font-size:13px!important; }    /* absolute px — predictable size */
+.eqpanel mjx-container{ font-size:12px!important; }    /* absolute px — predictable size */
 .eqpanel mjx-container[display="true"]{ margin:3px 0; text-align:left!important; }
 .eqpanel .step{ overflow-x:auto; }                     /* long lines scroll, not break  */
 ```
