@@ -181,6 +181,16 @@ For a more controlled feel, replace auto-play with Prev/Next buttons driving the
 
 When the logic is a sequence of moves, pair each step with a sentence so the diagram and the words advance together. Same mechanism as §4 but user-driven, with a step counter ("Step 2 of 5") and the caption doing the teaching. This is the best pattern for "explain how X works one move at a time."
 
+**Sync the figure to the derivation — reveal cues as the steps advance.** The strongest explainer slides tie the diagram and the math together: as the viewer steps through the derivation, light up the matching piece on the figure. Keep each cue (a labelled arrow, a glowing region, a highlighted part) in its own `<g id="...">` at `opacity:0`, and toggle it from the step index in `render()`:
+
+```js
+gCurrent.setAttribute("opacity", cur>=1 ? "1" : "0");  // show I when the field eqn appears
+gField.setAttribute("opacity",   cur>=1 ? "1" : "0");  // show B alongside it
+gResult.setAttribute("opacity",  cur>=N ? "1" : "0");  // light the payoff on the final step
+```
+
+This makes the takeaway land physically — e.g. the induced-emf arrow appears exactly when `ε = −L dI/dt` does, or the field-volume glows exactly when the energy-density step arrives. Reuse the same `cur` index that drives the equation reveal so figure and math never drift out of step.
+
 ## 6. Pan & zoom
 
 For dense or large diagrams (especially cross-sections / maps). Lightweight, no library:
