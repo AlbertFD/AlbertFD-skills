@@ -82,6 +82,7 @@ You can compress stages if the visual is simple or the user says "just build it"
 - **Drive all color from CSS custom properties** (see the design system in `references/html-patterns.md`) so the palette is consistent and easy to reroll. Don't hand-pick clashing colors per element.
 - **Let the interaction teach.** The best interactions externalize the explanation: a staged build-up shows causality in order; hover-reveal lets the viewer ask "what's this?" exactly when they wonder; a step-through narrates the logic one move at a time. Avoid interactivity that's just motion — every interaction should answer a question the viewer would actually have.
 - **Legibility is non-negotiable**, especially for the "talk slide" medium: large type, high contrast, generous spacing, nothing that vanishes against the background on a projector.
+- **Cite your sources for factual content.** If the visual makes factual, scientific, or historical claims (anatomy, physics, data, definitions), add a small **Sources** section at the end of the page listing the references the content was checked against. Verify every reference actually exists — search for it and confirm the title, authors, and a working link/DOI — and **never fabricate a citation**; a plausible-looking but invented reference is worse than none. Keep it compact and de-emphasized (small, muted, below the main visual) so it documents rigor without competing with the explanation. This matters most for research and teaching artifacts where the viewer needs to trust and follow up.
 
 ## Step 4 — Verify before delivering
 
@@ -95,6 +96,7 @@ You can compress stages if the visual is simple or the user says "just build it"
 - **Check correctness of the content**, not just that it renders. The whole value is a *correct* explanation — a beautiful diagram of a wrong mechanism is worse than no diagram. Verify the relationships, the direction of every arrow/flow, the labels, units, and any numbers against the source. **Flag any claim you inferred or assumed rather than took from the source, so the user can pressure-test it** — an honest "I assumed the second stage feeds the third; confirm?" is far more valuable than a confident guess.
 - **Read it back at the chosen depth level.** Put yourself in the audience's shoes: would a newcomer actually follow this, or did jargon creep in? Would an expert find it patronizing or imprecise?
 - **Confirm it serves the one takeaway.** If an element doesn't help the viewer reach the key takeaway, cut it. Busy is the enemy of clear.
+- **If you added citations, confirm each resolves to a real source** (correct title/authors, working link/DOI you actually checked). One hallucinated reference undermines the whole artifact.
 - **Confirm equations actually render in the browser, not as raw LaTeX.** If you used MathJax, check it didn't silently fall back to showing `\( ... \)` because the CDN was blocked — if there's any doubt, switch to the dependency-free HTML/CSS math. Any chart's axes must be honest (label reconstructions as such; never present invented data as real).
 
 ## Step 5 — Save and present
