@@ -209,7 +209,7 @@ Use real notation only when it carries meaning (calibrate to depth — newcomers
 <style>
   .mline{font-family:Georgia,"Times New Roman",serif;font-size:14px;white-space:nowrap}
   .mline .v{font-style:italic}                 /* variables: italic serif */
-  .fr{display:inline-flex;flex-direction:column;vertical-align:-0.45em;text-align:center;margin:0 .16em}
+  .fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 .16em} /* middle keeps the = aligned with the fraction's centre */
   .fr>.nu{border-bottom:1.5px solid currentColor;padding:0 .3em}
   .fr>.de{padding:0 .3em}
   .mline sup,.mline sub{font-size:.72em}
