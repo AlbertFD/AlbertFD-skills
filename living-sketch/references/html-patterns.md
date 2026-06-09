@@ -212,14 +212,16 @@ Write `\( E_n = -\tfrac{R}{n^2} \)` inline. After dynamically revealing any elem
 
 **Default equation size — start modest, scale to the container.** MathJax display math renders large by default and almost always comes out *too big* the first time, forcing a round-trip. Don't ship raw default-size equations. Set a sensible default up front and let it ride at roughly body-text scale:
 
-Size the math to **match the surrounding text** — equations should read as the same size as the prose/labels beside them, not as oversized display blocks. Set MathJax to 100% of the panel's own font size and let that one value control everything:
+Size the math to **match the surrounding text** — equations should read as the same size as the prose/labels beside them, not as oversized display blocks. MathJax sizes its output relative to the container font and adds its own scaling, so percentage tweaks render inconsistently and tend to come out too big. The reliable fix is to pin the math container to an **explicit pixel size** (~13–14px, normal body text) with `!important`, which forces a predictable, normal size regardless of MathJax's defaults:
 
 ```css
-.eqpanel{ font-size:16px; }                          /* == the prose it sits next to */
-.eqpanel mjx-container{ font-size:100%!important; }   /* math matches the text size   */
-.eqpanel mjx-container[display="true"]{ margin:4px 0; text-align:left!important; }
-.eqpanel .step{ overflow-x:auto; }                    /* long lines scroll, not break */
+.eqpanel{ font-size:14px; }                            /* the prose it sits next to     */
+.eqpanel mjx-container{ font-size:13px!important; }    /* absolute px — predictable size */
+.eqpanel mjx-container[display="true"]{ margin:3px 0; text-align:left!important; }
+.eqpanel .step{ overflow-x:auto; }                     /* long lines scroll, not break  */
 ```
+
+Prefer inline delimiters `\( ... \)` over display `\[ ... \]` for short formulas in a step list — display style renders larger and centered. If the math still looks oversized, lower the explicit px; don't chase it with percentages.
 
 **Keep every equation the same size — emphasize the current step with color, weight, or opacity, never a font bump.** It's tempting in a stepped derivation to enlarge the active line and shrink the neighbours, but that makes the panel jump around, reads as inconsistent, and the "big" line invariably ends up too big. Instead hold one uniform size for all equations and signal which step is live another way:
 
