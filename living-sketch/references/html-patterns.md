@@ -83,6 +83,15 @@ Drive every color from the `:root` variables so the palette is consistent and ea
 
 Note: one stray non-ASCII character can silently break CSS or JS — type variable names cleanly and `node --check` the script block before delivering.
 
+**Fit the page — especially for a talk slide.** The visual should fit on one screen without the user scrolling. Cap the dominant element and bound the container so it never exceeds the viewport:
+
+```css
+.slide{ max-height:96vh; overflow:auto; }   /* container never taller than the screen */
+#fig{ max-height:56vh; margin:0 auto; }      /* the diagram won't crowd out the text  */
+```
+
+Then trim vertical fat (panel `min-height`, big headings, generous padding/margins) until the whole thing sits within `100vh` at a normal window size. After building, mentally check it at a typical laptop height — if it needs scrolling to see the takeaway, it isn't a slide yet.
+
 ## 2. SVG diagram primitives
 
 Author diagrams as inline SVG — crisp, labelable, animatable. Define reusable markers once.
@@ -203,11 +212,13 @@ Write `\( E_n = -\tfrac{R}{n^2} \)` inline. After dynamically revealing any elem
 
 **Default equation size — start modest, scale to the container.** MathJax display math renders large by default and almost always comes out *too big* the first time, forcing a round-trip. Don't ship raw default-size equations. Set a sensible default up front and let it ride at roughly body-text scale:
 
+Size the math to **match the surrounding text** — equations should read as the same size as the prose/labels beside them, not as oversized display blocks. Set MathJax to 100% of the panel's own font size and let that one value control everything:
+
 ```css
-.eqpanel{ font-size:14px; }                         /* the text the math sits in   */
-.eqpanel mjx-container{ font-size:88%!important; }   /* nudge MathJax down to match */
+.eqpanel{ font-size:16px; }                          /* == the prose it sits next to */
+.eqpanel mjx-container{ font-size:100%!important; }   /* math matches the text size   */
 .eqpanel mjx-container[display="true"]{ margin:4px 0; text-align:left!important; }
-.eqpanel .step{ overflow-x:auto; }                   /* long lines scroll, not break */
+.eqpanel .step{ overflow-x:auto; }                    /* long lines scroll, not break */
 ```
 
 **Keep every equation the same size — emphasize the current step with color, weight, or opacity, never a font bump.** It's tempting in a stepped derivation to enlarge the active line and shrink the neighbours, but that makes the panel jump around, reads as inconsistent, and the "big" line invariably ends up too big. Instead hold one uniform size for all equations and signal which step is live another way:
