@@ -112,6 +112,17 @@ Author diagrams as inline SVG — crisp, labelable, animatable. Define reusable 
 
 Useful layouts: left→right pipeline (boxes + arrows), top-down tree, energy-level ladder (stacked horizontal lines), cross-section (nested shapes with leader lines to side labels), state machine (circles + curved arrows with `marker-end`), network (nodes + lines). Use leader lines (`<line>` + `<text>`) to label without crowding the figure.
 
+**Keep labels legible — never let text sit illegibly on the artwork.** A label that overlaps a plate, wire, arrow, or shaded region becomes unreadable, and this is one of the most common defects. Two defences, use both:
+
+1. **Place text in clear space.** Park labels outside the shapes (above/below the figure, beside a plate) and connect them with a thin leader line rather than dropping them on top of the geometry. Reserve empty bands in your layout for labels before you start drawing. When a region must be labelled in place (e.g. "ε" in a gap full of field arrows), move it to a clear edge of that region or open a gap in the arrows for it.
+2. **Give every on-figure label a halo** so that wherever it lands, it stays readable over any color or line beneath it:
+
+```css
+#fig text.lbl{ paint-order:stroke; stroke:#fff; stroke-width:3.4px; stroke-linejoin:round; }
+```
+
+(Use a dark halo on a dark canvas.) Add `class="lbl"` to each `<text>`. After laying out, scan every label against what's behind it — if any sit on a shape or line, move them or confirm the halo carries them. This is part of the final fidelity/legibility pass.
+
 ## 3. Hover-reveal labels
 
 Let the viewer ask "what's this?" exactly when they wonder. Pure CSS for hover; add focus for keyboard/touch.
@@ -189,6 +200,17 @@ Use when real notation carries meaning (calibrate to depth — newcomers rarely 
 ```
 
 Write `\( E_n = -\tfrac{R}{n^2} \)` inline. After dynamically revealing any element containing math, call `MathJax.typesetPromise()`. For an expert audience, break a key equation down term-by-term with small labelled cards.
+
+**Default equation size — start modest, scale to the container.** MathJax display math renders large by default and almost always comes out *too big* the first time, forcing a round-trip. Don't ship raw default-size equations. Set a sensible default up front and let it ride at roughly body-text scale:
+
+```css
+.eqpanel{ font-size:14px; }                         /* the text the math sits in   */
+.eqpanel mjx-container{ font-size:92%!important; }   /* nudge MathJax down to match */
+.eqpanel mjx-container[display="true"]{ margin:4px 0; text-align:left!important; }
+.eqpanel .step{ overflow-x:auto; }                   /* long lines scroll, not break */
+```
+
+Tune per medium: a talk slide can go a little larger (the *current* revealed line ~16–18px, dimmed neighbours smaller); a paper figure or teaching aid wants it near body size. If an equation is wide, split it across two `\[...\]` lines or use `\tfrac`/`\dfrac` deliberately rather than letting one line blow out the width. The instinct to make math "prominent" overshoots — err small, then enlarge only if the user asks.
 
 ## 8. Chart.js (only when the point is data)
 
