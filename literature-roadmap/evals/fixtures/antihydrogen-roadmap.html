@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Research Roadmap</title>
+<style>
+  :root{
+    --paper:#faf8f3; --card:#ffffff; --ink:#1c2130; --ink-soft:#5b6172; --ink-faint:#9aa0b0;
+    --line:#e8e4da; --accent:#3d5af1; --accent-soft:#eef1fe;
+    --c-review:#3d5af1; --c-review-bg:#eef1fe;
+    --c-theory:#8b5cf6; --c-theory-bg:#f3eefe;
+    --c-experiment:#0e9f6e; --c-experiment-bg:#e7f7f0;
+    --c-methods:#d97706; --c-methods-bg:#fdf3e3;
+    --c-book:#db2777; --c-book-bg:#fcebf3;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.55}
+  a{color:var(--accent)}
+  .wrap{max-width:880px;margin:0 auto;padding:0 28px 96px}
+
+  header.hero{padding:64px 0 28px;border-bottom:1px solid var(--line)}
+  .kicker{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+  h1{font-family:var(--serif);font-size:clamp(30px,5vw,44px);line-height:1.12;font-weight:600;letter-spacing:-.01em}
+  .subtitle{font-family:var(--serif);font-style:italic;font-size:19px;color:var(--ink-soft);margin-top:10px}
+  .scope{font-family:var(--mono);font-size:12px;color:var(--ink-faint);margin-top:18px}
+  .intro{margin-top:22px;font-size:15.5px;color:var(--ink-soft);max-width:64ch}
+
+  .toolbar{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--paper) 88%,transparent);
+    backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:12px 0;margin-bottom:36px}
+  .toolbar-inner{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+  .progress-wrap{display:flex;align-items:center;gap:10px;margin-right:auto}
+  .progress-bar{width:140px;height:6px;background:var(--line);border-radius:99px;overflow:hidden}
+  .progress-fill{height:100%;background:var(--accent);border-radius:99px;width:0;transition:width .4s ease}
+  .progress-label{font-family:var(--mono);font-size:11.5px;color:var(--ink-soft);white-space:nowrap}
+  .filters{display:flex;gap:6px;flex-wrap:wrap}
+  .chip{font-family:var(--mono);font-size:11px;letter-spacing:.04em;padding:5px 11px;border-radius:99px;
+    border:1px solid var(--line);background:var(--card);cursor:pointer;color:var(--ink-soft);transition:all .15s}
+  .chip.on{color:#fff}
+  .chip[data-type=review].on{background:var(--c-review);border-color:var(--c-review)}
+  .chip[data-type=theory].on{background:var(--c-theory);border-color:var(--c-theory)}
+  .chip[data-type=experiment].on{background:var(--c-experiment);border-color:var(--c-experiment)}
+  .chip[data-type=methods].on{background:var(--c-methods);border-color:var(--c-methods)}
+  .chip[data-type=book].on{background:var(--c-book);border-color:var(--c-book)}
+  .search{font-family:var(--sans);font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;
+    background:var(--card);color:var(--ink);width:170px;outline:none}
+  .search:focus{border-color:var(--accent)}
+  .btn{font-family:var(--sans);font-size:12.5px;font-weight:600;padding:6px 13px;border-radius:8px;cursor:pointer;
+    border:1px solid var(--line);background:var(--card);color:var(--ink-soft);transition:all .15s}
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+
+  .legend{display:flex;gap:16px;flex-wrap:wrap;margin:30px 0 8px}
+  .legend span{font-family:var(--mono);font-size:11px;color:var(--ink-soft);display:flex;align-items:center;gap:6px}
+  .dot{width:9px;height:9px;border-radius:50%;display:inline-block}
+
+  section.tier{margin-top:52px}
+  .tier-head{display:flex;align-items:baseline;gap:14px;border-bottom:2px solid var(--ink);padding-bottom:10px;margin-bottom:6px}
+  .tier-head h2{font-family:var(--serif);font-size:24px;font-weight:600}
+  .tier-count{font-family:var(--mono);font-size:11.5px;color:var(--ink-faint)}
+  .tier-blurb{font-size:14px;color:var(--ink-soft);margin:10px 0 22px;max-width:62ch}
+
+  .paper{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--ink-faint);
+    border-radius:10px;padding:20px 22px;margin-bottom:16px;transition:box-shadow .2s}
+  .paper:hover{box-shadow:0 4px 18px rgba(28,33,48,.07)}
+  .paper.t-review{border-left-color:var(--c-review)} .paper.t-theory{border-left-color:var(--c-theory)}
+  .paper.t-experiment{border-left-color:var(--c-experiment)} .paper.t-methods{border-left-color:var(--c-methods)}
+  .paper.t-book{border-left-color:var(--c-book)}
+  .paper.done{opacity:.62}
+  .paper-top{display:flex;gap:10px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
+  .badge{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+    padding:3px 9px;border-radius:5px;flex-shrink:0}
+  .b-review{background:var(--c-review-bg);color:var(--c-review)} .b-theory{background:var(--c-theory-bg);color:var(--c-theory)}
+  .b-experiment{background:var(--c-experiment-bg);color:var(--c-experiment)} .b-methods{background:var(--c-methods-bg);color:var(--c-methods)}
+  .b-book{background:var(--c-book-bg);color:var(--c-book)}
+  .paper h3{font-family:var(--serif);font-size:18.5px;font-weight:600;line-height:1.3;margin:10px 0 4px}
+  .meta{font-size:13px;color:var(--ink-soft)}
+  .meta a{font-family:var(--mono);font-size:12px;text-decoration:none}
+  .meta a:hover{text-decoration:underline}
+  .why{font-size:14.5px;margin:12px 0 4px;color:var(--ink);max-width:68ch}
+  .tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+  .effort{font-family:var(--mono);font-size:11px;color:var(--ink-soft);border:1px dashed var(--line);
+    padding:3px 9px;border-radius:99px}
+  .prereq{font-family:var(--mono);font-size:11px;color:var(--ink-soft)}
+  .prereq a{color:var(--ink-soft)}
+  .status{font-family:var(--sans);font-size:12px;padding:4px 8px;border-radius:7px;border:1px solid var(--line);
+    background:var(--paper);color:var(--ink-soft);cursor:pointer}
+  .status.s-reading{border-color:var(--c-methods);color:var(--c-methods)}
+  .status.s-done{border-color:var(--c-experiment);color:var(--c-experiment)}
+
+  .notes-toggle{font-size:12.5px;font-weight:600;color:var(--accent);background:none;border:none;cursor:pointer;padding:0;margin-top:12px}
+  .notes{display:none;margin-top:10px}
+  .notes.open{display:block}
+  .notes textarea{width:100%;min-height:96px;font-family:var(--sans);font-size:13.5px;line-height:1.5;
+    padding:12px;border:1px solid var(--line);border-radius:8px;background:#fffdf8;color:var(--ink);resize:vertical;outline:none}
+  .notes textarea:focus{border-color:var(--accent)}
+  .saved{font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);margin-top:4px;height:14px}
+
+  .synthesis{margin-top:44px}
+  .synthesis h2{font-family:var(--serif);font-size:24px;font-weight:600;border-bottom:2px solid var(--ink);padding-bottom:10px}
+  .syn-grid{display:grid;gap:14px;margin-top:20px}
+  .syn{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 20px}
+  .syn-kind{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:3px 9px;border-radius:5px}
+  .k-pattern{background:var(--accent-soft);color:var(--accent)}
+  .k-conflict{background:var(--c-book-bg);color:var(--c-book)}
+  .k-gap{background:var(--c-methods-bg);color:var(--c-methods)}
+  .syn h3{font-family:var(--serif);font-size:16.5px;font-weight:600;margin:10px 0 6px}
+  .syn p{font-size:14px;color:var(--ink-soft);max-width:70ch}
+  .syn-refs{margin-top:10px;font-family:var(--mono);font-size:11px}
+  .syn-refs a{margin-right:10px;color:var(--ink-soft)}
+  footer{margin-top:72px;border-top:1px solid var(--line);padding-top:20px;
+    font-family:var(--mono);font-size:11px;color:var(--ink-faint)}
+  .hidden{display:none!important}
+  @media print{.toolbar,.notes-toggle,.btn{display:none}.paper{break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="kicker">Research Roadmap</div>
+    <h1 id="subject"></h1>
+    <div class="subtitle" id="subtitle"></div>
+    <div class="scope" id="scope"></div>
+    <p class="intro" id="intro"></p>
+    <div class="legend" id="legend"></div>
+  </header>
+
+  <div class="toolbar"><div class="wrap toolbar-inner" style="padding:0">
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="pfill"></div></div>
+      <span class="progress-label" id="plabel"></span>
+    </div>
+    <div class="filters" id="filters"></div>
+    <input class="search" id="search" type="search" placeholder="Search papers…">
+    <button class="btn" id="export">Export notes</button>
+  </div></div>
+
+  <section class="synthesis" id="synthesis" hidden>
+    <h2>Synthesis — patterns, conflicts &amp; gaps</h2>
+    <div class="syn-grid" id="synGrid"></div>
+  </section>
+
+  <main id="tiers"></main>
+
+  <footer>Generated <span id="gen"></span> · Notes &amp; progress are saved automatically in this browser (localStorage). Use “Export notes” to back them up.</footer>
+</div>
+
+<script>
+const ROADMAP_DATA = {"subject": "Antihydrogen Physics", "subtitle": "Trapping, spectroscopy, and gravity tests of the anti-atom", "generated": "2026-05-10", "scope": "5 papers \u00b7 2018\u20132024 \u00b7 focus: state of the art", "intro": "Start with the review for orientation, then follow the experimental arc: spectroscopy, cooling, gravity.", "synthesis": [{"kind": "gap", "title": "Cooling techniques beyond Doppler", "text": "The corpus covers Lyman-alpha Doppler cooling only; sympathetic and other advanced cooling schemes are not represented.", "papers": ["baker2021-cooling"]}], "tiers": [{"id": "tier1", "name": "Tier 1 \u2014 Start here", "blurb": "Orientation.", "papers": [{"id": "yamazaki2020-review", "title": "Testing Fundamental Physics in Antihydrogen Experiments", "authors": "ALPHA-collaboration authors (review)", "year": 2020, "venue": "arXiv preprint", "type": "review", "link": "https://arxiv.org/abs/2002.09348", "linkLabel": "arXiv:2002.09348", "why": "Survey of antihydrogen production, trapping, and the physics motivations (CPT, gravity).", "effort": "~3 h", "prereqs": []}]}, {"id": "tier2", "name": "Tier 2 \u2014 Core literature", "blurb": "The landmark ALPHA measurements.", "papers": [{"id": "ahmadi2018-1s2s", "title": "Characterization of the 1S\u20132S transition in antihydrogen", "authors": "M. Ahmadi et al. (ALPHA)", "year": 2018, "venue": "Nature 557, 71\u201375", "type": "experiment", "link": "https://doi.org/10.1038/s41586-018-0017-2", "linkLabel": "DOI", "why": "The 1S\u20132S frequency in antihydrogen measured to 2e-12, consistent with hydrogen \u2014 the benchmark CPT test.", "effort": "~2 h", "prereqs": ["yamazaki2020-review"]}, {"id": "baker2021-cooling", "title": "Laser cooling of antihydrogen atoms", "authors": "C. J. Baker et al. (ALPHA)", "year": 2021, "venue": "Nature 592, 35\u201342", "type": "methods", "link": "https://doi.org/10.1038/s41586-021-03289-6", "linkLabel": "DOI", "why": "First laser cooling of an anti-atom (Lyman-alpha Doppler cooling); >10x reduction in median kinetic energy.", "effort": "~2 h", "prereqs": ["ahmadi2018-1s2s"]}]}, {"id": "tier3", "name": "Tier 3 \u2014 Deep dives & frontier", "blurb": "Latest results.", "papers": [{"id": "anderson2023-gravity", "title": "Observation of the effect of gravity on the motion of antimatter", "authors": "E. K. Anderson et al. (ALPHA-g)", "year": 2023, "venue": "Nature 621, 716\u2013722", "type": "experiment", "link": "https://doi.org/10.1038/s41586-023-06527-1", "linkLabel": "DOI", "why": "First direct observation that antihydrogen falls down: a_g = (0.75 \u00b1 0.13 \u00b1 0.16) g.", "effort": "~2 h", "prereqs": ["baker2021-cooling"]}, {"id": "alpha2024-hyperfine", "title": "Precision spectroscopy of the hyperfine components of the 1S\u20132S transition in antihydrogen", "authors": "ALPHA Collaboration", "year": 2024, "venue": "Nature Physics", "type": "experiment", "link": "https://doi.org/10.1038/s41567-024-02712-9", "linkLabel": "DOI", "why": "Resolves hyperfine components of the 1S\u20132S line, sharpening the hydrogen\u2013antihydrogen comparison.", "effort": "~2 h", "prereqs": ["ahmadi2018-1s2s"]}]}]};
+
+const TYPES = {
+  review:"Review", theory:"Theory", experiment:"Experiment", methods:"Methods", book:"Book / Thesis"
+};
+const STATUSES = ["To read","Reading","Done"];
+const KEY = "lit-roadmap:" + ROADMAP_DATA.subject.toLowerCase().replace(/[^a-z0-9]+/g,"-");
+
+let store = {};
+try{ store = JSON.parse(localStorage.getItem(KEY)) || {}; }catch(e){ store = {}; }
+const save = () => localStorage.setItem(KEY, JSON.stringify(store));
+const rec = id => store[id] || (store[id] = {status:0, notes:""});
+
+const allPapers = ROADMAP_DATA.tiers.flatMap(t => t.papers);
+const byId = Object.fromEntries(allPapers.map(p => [p.id, p]));
+const activeTypes = new Set(Object.keys(TYPES));
+
+function esc(s){return String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+
+/* header */
+document.title = ROADMAP_DATA.subject + " — Research Roadmap";
+subject.textContent = ROADMAP_DATA.subject;
+subtitle.textContent = ROADMAP_DATA.subtitle || "";
+scope.textContent = ROADMAP_DATA.scope || "";
+intro.textContent = ROADMAP_DATA.intro || "";
+gen.textContent = ROADMAP_DATA.generated || "";
+
+legend.innerHTML = Object.entries(TYPES).map(([k,v]) =>
+  `<span><i class="dot" style="background:var(--c-${k})"></i>${v}</span>`).join("");
+
+filters.innerHTML = Object.entries(TYPES).map(([k,v]) =>
+  `<button class="chip on" data-type="${k}">${v}</button>`).join("");
+filters.addEventListener("click", e=>{
+  const b = e.target.closest(".chip"); if(!b) return;
+  const t = b.dataset.type;
+  activeTypes.has(t) ? activeTypes.delete(t) : activeTypes.add(t);
+  b.classList.toggle("on"); applyFilters();
+});
+
+/* synthesis */
+const KINDS = {pattern:"Pattern", conflict:"Conflict", gap:"Gap"};
+if((ROADMAP_DATA.synthesis||[]).length){
+  document.getElementById("synthesis").hidden = false;
+  synGrid.innerHTML = ROADMAP_DATA.synthesis.map(s=>`
+    <div class="syn">
+      <span class="syn-kind k-${esc(s.kind)}">${KINDS[s.kind]||esc(s.kind)}</span>
+      <h3>${esc(s.title)}</h3>
+      <p>${esc(s.text)}</p>
+      ${(s.papers||[]).length?`<div class="syn-refs">${s.papers.filter(id=>byId[id]).map(id=>
+        `<a href="#card-${esc(id)}">→ ${esc(byId[id].authors.split(",")[0])} (${esc(byId[id].year)})</a>`).join("")}</div>`:""}
+    </div>`).join("");
+}
+
+/* render */
+tiers.innerHTML = ROADMAP_DATA.tiers.map(t => `
+  <section class="tier" id="${esc(t.id)}">
+    <div class="tier-head"><h2>${esc(t.name)}</h2>
+      <span class="tier-count">${t.papers.length} ${t.papers.length===1?"item":"items"}</span></div>
+    <p class="tier-blurb">${esc(t.blurb||"")}</p>
+    ${t.papers.map(p => paperCard(p)).join("")}
+  </section>`).join("");
+
+function paperCard(p){
+  const r = rec(p.id);
+  const prereqs = (p.prereqs||[]).filter(id=>byId[id]).map(id=>
+    `<a href="#card-${esc(id)}">${esc(byId[id].title.length>42 ? byId[id].title.slice(0,40)+"…" : byId[id].title)}</a>`).join(" · ");
+  return `
+  <article class="paper t-${esc(p.type)} ${r.status===2?"done":""}" id="card-${esc(p.id)}" data-id="${esc(p.id)}" data-type="${esc(p.type)}">
+    <div class="paper-top">
+      <span class="badge b-${esc(p.type)}">${TYPES[p.type]||esc(p.type)}</span>
+      <select class="status ${["","s-reading","s-done"][r.status]}">
+        ${STATUSES.map((s,i)=>`<option ${i===r.status?"selected":""}>${s}</option>`).join("")}
+      </select>
+    </div>
+    <h3>${esc(p.title)}</h3>
+    <div class="meta">${esc(p.authors)} (${esc(p.year)}) · ${esc(p.venue)} ·
+      <a href="${esc(p.link)}" target="_blank" rel="noopener">${esc(p.linkLabel||"Link")} ↗</a></div>
+    <p class="why">${esc(p.why)}</p>
+    <div class="tags">
+      ${p.effort?`<span class="effort">⏱ ${esc(p.effort)}</span>`:""}
+      ${prereqs?`<span class="prereq">Read first: ${prereqs}</span>`:""}
+    </div>
+    <button class="notes-toggle">${r.notes?"Notes ✎ (saved)":"Add notes +"}</button>
+    <div class="notes"><textarea placeholder="Your notes — key results, questions, follow-ups…">${esc(r.notes)}</textarea>
+      <div class="saved"></div></div>
+  </article>`;
+}
+
+/* interactions */
+tiers.addEventListener("click", e=>{
+  const t = e.target.closest(".notes-toggle");
+  if(t) t.nextElementSibling.classList.toggle("open");
+});
+tiers.addEventListener("change", e=>{
+  const sel = e.target.closest(".status"); if(!sel) return;
+  const card = sel.closest(".paper"); const r = rec(card.dataset.id);
+  r.status = sel.selectedIndex; save();
+  sel.className = "status " + ["","s-reading","s-done"][r.status];
+  card.classList.toggle("done", r.status===2);
+  progress();
+});
+let timer;
+tiers.addEventListener("input", e=>{
+  const ta = e.target.closest(".notes textarea"); if(!ta) return;
+  const card = ta.closest(".paper"); rec(card.dataset.id).notes = ta.value;
+  clearTimeout(timer);
+  timer = setTimeout(()=>{ save();
+    ta.parentElement.querySelector(".saved").textContent = "saved " + new Date().toLocaleTimeString();
+    card.querySelector(".notes-toggle").textContent = ta.value ? "Notes ✎ (saved)" : "Add notes +";
+  }, 400);
+});
+
+search.addEventListener("input", applyFilters);
+function applyFilters(){
+  const q = search.value.trim().toLowerCase();
+  document.querySelectorAll(".paper").forEach(card=>{
+    const p = byId[card.dataset.id];
+    const txt = (p.title+" "+p.authors+" "+p.venue+" "+p.why).toLowerCase();
+    card.classList.toggle("hidden", !activeTypes.has(p.type) || (q && !txt.includes(q)));
+  });
+  document.querySelectorAll(".tier").forEach(s=>{
+    s.classList.toggle("hidden", !s.querySelector(".paper:not(.hidden)"));
+  });
+}
+
+function progress(){
+  const done = allPapers.filter(p=>rec(p.id).status===2).length;
+  pfill.style.width = (allPapers.length ? 100*done/allPapers.length : 0) + "%";
+  plabel.textContent = done + " / " + allPapers.length + " read";
+}
+progress();
+
+/* export */
+document.getElementById("export").addEventListener("click", ()=>{
+  let md = "# " + ROADMAP_DATA.subject + " — reading notes\n\n_Exported " + new Date().toLocaleDateString() + "_\n";
+  for(const t of ROADMAP_DATA.tiers){
+    const items = t.papers.filter(p => rec(p.id).notes || rec(p.id).status>0);
+    if(!items.length) continue;
+    md += "\n## " + t.name + "\n";
+    for(const p of items){
+      const r = rec(p.id);
+      md += "\n### " + p.title + "\n*" + p.authors + " (" + p.year + ") · " + p.venue + " · " +
+        STATUSES[r.status] + "*\n\n" + (r.notes || "_no notes_") + "\n";
+    }
+  }
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([md], {type:"text/markdown"}));
+  a.download = KEY.replace("lit-roadmap:","") + "-notes.md";
+  a.click(); URL.revokeObjectURL(a.href);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+{
+  "skill_name": "literature-roadmap",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "I'm starting my thesis literature review on antiprotonic helium spectroscopy. I work at CERN on this experiment. I need to understand the theoretical foundations, the experimental methods, the state of the art, and the open problems. Find the most relevant papers from the last decade (~15-20), and give me a reading guide that tells me what to read first \u2014 I want it as a nicely designed HTML page I can take notes in as I work through it.",
+      "expected_output": "Single self-contained HTML roadmap with ~15-20 verified real papers (DOIs/arXiv IDs that resolve), 3 tiers in reading order, color-coded study types, synthesis section with patterns/conflicts/gaps, working notes + progress tracking",
+      "files": [],
+      "expectations": [
+        "Single self-contained HTML file (no external local deps)",
+        "Citations use real arXiv IDs and/or DOIs (~1 per paper)",
+        "Papers organized into reading-order tiers (Tier 1/2/3 or equivalent)",
+        "Study types color-coded (review/theory/experiment/methods)",
+        "Synthesis section covers patterns/conflicts/gaps across the corpus",
+        "Per-paper notes persist via localStorage",
+        "No fabricated citations: spot-checked Tier 1 entries resolve",
+        "Paper count in requested 15-20 range",
+        "Foundations tier present or pre-decade classics justified",
+        "Each paper has a non-generic 'why read this' rationale"
+      ]
+    },
+    {
+      "id": 1,
+      "prompt": "hey so i just got a postdoc position and the group does laser cooling of molecules which i know basically nothing about lol. can you put together like 10 must-read papers to get me up to speed? something i can work through over the next month",
+      "expected_output": "HTML roadmap with ~10 verified papers, casual request correctly interpreted, asks or infers reasonable scope, tiered for a newcomer (reviews first), real citations only",
+      "files": [],
+      "expectations": [
+        "Single self-contained HTML file (no external local deps)",
+        "Citations use real arXiv IDs and/or DOIs (~1 per paper)",
+        "Papers organized into reading-order tiers (Tier 1/2/3 or equivalent)",
+        "Study types color-coded (review/theory/experiment/methods)",
+        "Synthesis section covers patterns/conflicts/gaps",
+        "Per-paper notes persist via localStorage",
+        "No fabricated citations: spot-checked entries resolve",
+        "Paper count is ~10 (8-12)",
+        "Tiered for a newcomer: review/orientation papers first",
+        "Casual request correctly interpreted into a structured roadmap"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Here's my research roadmap from last month (antihydrogen-roadmap.html). Two things: (1) reading through these I get the impression the measurement precision is improving roughly 10x every couple of years \u2014 is that a real trend or am I cherry-picking? check it across the papers and beyond. (2) I realized I don't understand sympathetic/laser cooling of antihydrogen at all \u2014 find me 2-3 sources to fill that gap and slot them into the roadmap where they belong. Don't break my saved notes.",
+      "expected_output": "Pattern claim tested with counts/exceptions (not just agreement), 2-3 verified new papers added to the correct tier, synthesis section updated, existing paper ids preserved so localStorage notes survive",
+      "files": [
+        "fixtures/antihydrogen-roadmap.html"
+      ],
+      "expectations": [
+        "The 10x-precision trend claim is tested with counts/exceptions, not just confirmed",
+        "States a nuanced verdict (lumpy/episodic vs steady) rather than blind agreement",
+        "Adds 2-3 new papers on sympathetic/laser cooling of antihydrogen",
+        "New citations are real and verified (arXiv IDs / DOIs)",
+        "New papers slotted into a specific tier with stated reasoning",
+        "All original paper ids preserved unchanged (localStorage notes survive)",
+        "Synthesis section updated to reflect trend check and new papers",
+        "Output remains a valid single self-contained HTML roadmap"
+      ]
+    }
+  ]
+}
