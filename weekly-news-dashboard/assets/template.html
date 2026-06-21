@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<!--
+  Weekly News Dashboard template.
+  Replace __DASHBOARD_DATA__ below with a JSON object of this shape:
+
+  {
+    "title": "Weekly News Briefing",
+    "location": "Geneva & neighbouring France",
+    "window": { "start": "2026-06-14", "end": "2026-06-21", "label": "14–21 June 2026" },
+    "generated": "2026-06-21",
+    "top": ["sci-1","econ-1","pol-1","local-1","sci-2"],   // OPTIONAL ordered ids of the 5 most important stories overall, across categories. Falls back to first 5 if omitted.
+    "stories": [
+      {
+        "id": "sci-1",                         // stable, unique; keep unchanged on refresh
+        "category": "science",                 // science | economics | politics | local
+        "headline": "Plain, factual headline in your own words",
+        "summary": "2–4 sentences in your own words. What happened, the key figure, context.",
+        "why": "One sentence on why it matters.",
+        "date": "2026-06-18",                  // date of the development (within window)
+        "status": "verified",                  // verified | single-source
+        "sources": [
+          { "outlet": "Reuters", "url": "https://...", "primary": true },
+          { "outlet": "Financial Times", "url": "https://..." }
+        ]
+      }
+    ]
+  }
+
+  Categories must be one of: science, economics, politics, local.
+  Every source needs a real URL retrieved this session. Mark single-source stories with "status":"single-source".
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Weekly News Briefing</title>
+<style>
+  :root{
+    --paper:#faf8f3; --card:#fff; --line:#e8e4da;
+    --ink:#1c2130; --ink-soft:#5b6172; --ink-faint:#9aa0b0;
+    --accent:#3d5af1;
+    --science:#0e9f6e; --economics:#d97706; --politics:#8b5cf6; --local:#3d5af1;
+    --verified:#0e9f6e; --single:#d97706;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:"SF Mono",ui-monospace,Menlo,Consolas,monospace;
+    --shadow:0 4px 18px rgba(28,33,48,.07);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);
+    line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:880px;margin:0 auto;padding:0 22px 80px}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+
+  header.brief{padding:48px 0 22px}
+  .kicker{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);margin:0 0 10px}
+  h1{font-family:var(--serif);font-weight:600;font-size:clamp(30px,4.5vw,44px);
+    line-height:1.1;margin:0 0 8px}
+  .sub{color:var(--ink-soft);font-size:15.5px;margin:0}
+  .sub .loc{color:var(--ink)}
+
+  .toolbar{position:sticky;top:0;z-index:10;margin:18px 0 6px;padding:12px 0;
+    background:rgba(250,248,243,.86);backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+  .progress{font-family:var(--mono);font-size:12px;color:var(--ink-soft);white-space:nowrap}
+  .chips{display:flex;flex-wrap:wrap;gap:6px}
+  .chip{font-family:var(--mono);font-size:11.5px;letter-spacing:.04em;text-transform:uppercase;
+    padding:5px 11px;border:1px solid var(--line);border-radius:999px;background:var(--card);
+    color:var(--ink-soft);cursor:pointer;user-select:none}
+  .chip[aria-pressed="true"]{color:#fff;border-color:transparent}
+  .chip.all[aria-pressed="true"]{background:var(--ink)}
+  .chip.science[aria-pressed="true"]{background:var(--science)}
+  .chip.economics[aria-pressed="true"]{background:var(--economics)}
+  .chip.politics[aria-pressed="true"]{background:var(--politics)}
+  .chip.local[aria-pressed="true"]{background:var(--local)}
+  .search{margin-left:auto;flex:0 1 220px}
+  .search input{width:100%;padding:7px 12px;border:1px solid var(--line);border-radius:8px;
+    font-family:var(--sans);font-size:13.5px;background:var(--card);color:var(--ink)}
+
+  section.cat{margin:34px 0 0}
+  h2{font-family:var(--serif);font-weight:600;font-size:24px;margin:0 0 4px;
+    padding-bottom:8px;border-bottom:2px solid var(--ink);display:flex;align-items:baseline;gap:10px}
+  h2 .count{font-family:var(--mono);font-size:12px;color:var(--ink-faint);font-weight:400}
+
+  .card{position:relative;background:var(--card);border:1px solid var(--line);
+    border-left:4px solid var(--line);border-radius:10px;padding:18px 20px;margin:16px 0;
+    box-shadow:var(--shadow);transition:opacity .2s}
+  .card.science{border-left-color:var(--science)}
+  .card.economics{border-left-color:var(--economics)}
+  .card.politics{border-left-color:var(--politics)}
+  .card.local{border-left-color:var(--local)}
+  .card.read{opacity:.62}
+
+  .meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 8px}
+  .badge{font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;
+    padding:3px 8px;border-radius:5px;font-weight:600}
+  .badge.science{color:var(--science);background:#0e9f6e1a}
+  .badge.economics{color:var(--economics);background:#d977061a}
+  .badge.politics{color:var(--politics);background:#8b5cf61a}
+  .badge.local{color:var(--local);background:#3d5af11a}
+  .badge.status-verified{color:var(--verified);background:#0e9f6e14}
+  .badge.status-single{color:var(--single);background:#d9770614}
+  .date{font-family:var(--mono);font-size:11.5px;color:var(--ink-faint);margin-left:auto}
+
+  .card h3{font-family:var(--serif);font-weight:600;font-size:18.5px;line-height:1.25;margin:0 0 8px}
+  .card p{margin:0 0 10px;font-size:15px;color:var(--ink)}
+  .why{font-size:13.5px;color:var(--ink-soft)}
+  .why b{color:var(--ink);font-weight:600}
+  .sources{font-family:var(--mono);font-size:12px;color:var(--ink-faint);
+    display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
+  .sources .primary::after{content:" ·  primary";color:var(--ink-faint)}
+  .toggle{position:absolute;top:14px;right:16px;font-family:var(--mono);font-size:11px;
+    color:var(--ink-faint);background:none;border:1px solid var(--line);border-radius:6px;
+    padding:3px 9px;cursor:pointer}
+  .toggle:hover{color:var(--ink);border-color:var(--ink-soft)}
+  .card.read .toggle{color:var(--verified);border-color:var(--verified)}
+
+  .empty{color:var(--ink-faint);font-style:italic;padding:18px 0}
+  footer{margin-top:46px;padding-top:18px;border-top:1px solid var(--line);
+    font-family:var(--mono);font-size:11.5px;color:var(--ink-faint)}
+
+  /* top stories band */
+  .top5{margin:22px 0 0;background:var(--card);border:1px solid var(--line);
+    border-radius:12px;padding:18px 22px;box-shadow:var(--shadow)}
+  .top5 h2{font-family:var(--serif);font-size:19px;border:0;padding:0;margin:0 0 12px;
+    display:flex;align-items:baseline;gap:10px}
+  .top5 h2 .lab{font-family:var(--mono);font-size:11px;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--accent)}
+  .top5 ol{list-style:none;margin:0;padding:0;counter-reset:t}
+  .top5 li{counter-increment:t;display:flex;gap:11px;align-items:baseline;
+    padding:9px 0;border-top:1px solid var(--line)}
+  .top5 li:first-child{border-top:0}
+  .top5 li::before{content:counter(t);font-family:var(--mono);font-size:13px;
+    font-weight:700;color:var(--ink-faint);min-width:16px}
+  .top5 .dot{width:8px;height:8px;border-radius:50%;flex:0 0 auto;align-self:center}
+  .top5 .dot.science{background:var(--science)}
+  .top5 .dot.economics{background:var(--economics)}
+  .top5 .dot.politics{background:var(--politics)}
+  .top5 .dot.local{background:var(--local)}
+  .top5 a.t-head{font-weight:600;color:var(--ink);font-size:14.5px;cursor:pointer}
+  .top5 a.t-head:hover{color:var(--accent);text-decoration:none}
+  .top5 .t-date{font-family:var(--mono);font-size:11px;color:var(--ink-faint);
+    margin-left:auto;white-space:nowrap}
+  @keyframes flashcard{0%{box-shadow:0 0 0 3px var(--accent)}100%{box-shadow:var(--shadow)}}
+  .card.flash{animation:flashcard 1.5s ease-out}
+
+  @media print{
+    .toolbar,.toggle{display:none}
+    .card{break-inside:avoid;box-shadow:none}
+    body{background:#fff}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="brief">
+    <p class="kicker" id="kicker">Weekly Briefing</p>
+    <h1 id="title">Weekly News Briefing</h1>
+    <p class="sub" id="sub"></p>
+  </header>
+
+  <section class="top5" id="top5" hidden></section>
+
+  <div class="toolbar">
+    <span class="progress" id="progress"></span>
+    <div class="chips" id="chips"></div>
+    <div class="search"><input id="search" type="search" placeholder="Search stories…"></div>
+  </div>
+
+  <main id="content"></main>
+
+  <footer id="footer"></footer>
+</div>
+
+<script>
+const DASHBOARD_DATA = __DASHBOARD_DATA__;
+
+const CATS = [
+  {key:"science",   label:"Science"},
+  {key:"economics", label:"Economics"},
+  {key:"politics",  label:"Politics"},
+  {key:"local",     label:"Local"}
+];
+const data = DASHBOARD_DATA;
+const stories = data.stories || [];
+const LSKEY = "news-briefing:" + ((data.window && data.window.start) || data.generated || "x");
+let readState = {};
+try { readState = JSON.parse(localStorage.getItem(LSKEY) || "{}"); } catch(e){ readState = {}; }
+let activeCat = "all";
+let query = "";
+
+// Header
+document.getElementById("title").textContent = data.title || "Weekly News Briefing";
+const winLabel = (data.window && data.window.label) || "";
+const locText = data.location ? `<span class="loc">${esc(data.location)}</span>` : "";
+document.getElementById("sub").innerHTML =
+  [winLabel ? `Week of ${esc(winLabel)}` : "", locText].filter(Boolean).join(" · ");
+document.getElementById("kicker").textContent =
+  (CATS.filter(c=>stories.some(s=>s.category===c.key)).length) + " sections · " + stories.length + " stories";
+
+// Chips
+const presentCats = CATS.filter(c => stories.some(s => s.category === c.key));
+const chipsEl = document.getElementById("chips");
+[{key:"all",label:"All"}].concat(presentCats).forEach(c=>{
+  const b=document.createElement("button");
+  b.className="chip "+c.key; b.textContent=c.label;
+  b.setAttribute("aria-pressed", c.key===activeCat);
+  b.onclick=()=>{activeCat=c.key; syncChips(); render();};
+  chipsEl.appendChild(b);
+});
+function syncChips(){ [...chipsEl.children].forEach(b=>{
+  b.setAttribute("aria-pressed", b.classList.contains(activeCat)); }); }
+
+document.getElementById("search").addEventListener("input", e=>{ query=e.target.value.toLowerCase().trim(); render(); });
+
+function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+
+function matches(s){
+  if(activeCat!=="all" && s.category!==activeCat) return false;
+  if(query){
+    const hay=(s.headline+" "+s.summary+" "+(s.why||"")+" "+(s.sources||[]).map(x=>x.outlet).join(" ")).toLowerCase();
+    if(!hay.includes(query)) return false;
+  }
+  return true;
+}
+
+function storyCard(s){
+  const read = !!readState[s.id];
+  const statusCls = s.status==="single-source" ? "status-single" : "status-verified";
+  const statusTxt = s.status==="single-source" ? "Single source" : "Verified ✓";
+  const srcs = (s.sources||[]).map(src=>
+    `<a class="${src.primary?"primary":""}" href="${esc(src.url)}" target="_blank" rel="noopener">${esc(src.outlet)}</a>`
+  ).join("");
+  return `<article class="card ${esc(s.category)} ${read?"read":""}" id="card-${esc(s.id)}" data-id="${esc(s.id)}">
+    <button class="toggle" data-id="${esc(s.id)}">${read?"Read ✓":"Mark read"}</button>
+    <div class="meta">
+      <span class="badge ${esc(s.category)}">${esc(s.category)}</span>
+      <span class="badge ${statusCls}">${statusTxt}</span>
+      <span class="date">${esc(s.date||"")}</span>
+    </div>
+    <h3>${esc(s.headline)}</h3>
+    <p>${esc(s.summary)}</p>
+    ${s.why?`<p class="why"><b>Why it matters:</b> ${esc(s.why)}</p>`:""}
+    <div class="sources">${srcs||'<span>No source listed</span>'}</div>
+  </article>`;
+}
+
+function render(){
+  const content=document.getElementById("content");
+  const visible=stories.filter(matches);
+  let html="";
+  presentCats.forEach(c=>{
+    if(activeCat!=="all" && activeCat!==c.key) return;
+    const items=visible.filter(s=>s.category===c.key);
+    if(!items.length) return;
+    html+=`<section class="cat"><h2>${c.label} <span class="count">${items.length}</span></h2>`+
+      items.map(storyCard).join("")+`</section>`;
+  });
+  content.innerHTML = html || `<p class="empty">No stories match your filter.</p>`;
+  content.querySelectorAll(".toggle").forEach(btn=>{
+    btn.onclick=()=>{ const id=btn.dataset.id; readState[id]=!readState[id];
+      localStorage.setItem(LSKEY, JSON.stringify(readState)); render(); updateProgress(); };
+  });
+  updateProgress();
+}
+
+function updateProgress(){
+  const total=stories.length;
+  const read=stories.filter(s=>readState[s.id]).length;
+  document.getElementById("progress").textContent=`${read}/${total} read`;
+}
+
+// Top 5 most important — editorial list set in data.top, else first 5 by order
+function renderTop5(){
+  const el=document.getElementById("top5");
+  const ids=Array.isArray(data.top)?data.top:[];
+  let picks=ids.map(id=>stories.find(s=>s.id===id)).filter(Boolean);
+  if(picks.length===0) picks=stories.slice(0,5);
+  picks=picks.slice(0,5);
+  if(picks.length===0){ el.hidden=true; return; }
+  el.hidden=false;
+  el.innerHTML=`<h2><span class="lab">Top stories</span> The week's ${picks.length} most important</h2>`+
+    `<ol>`+picks.map(s=>
+      `<li><span class="dot ${esc(s.category)}"></span>`+
+      `<a class="t-head" data-target="${esc(s.id)}">${esc(s.headline)}</a>`+
+      `<span class="t-date">${esc(s.date||"")}</span></li>`
+    ).join("")+`</ol>`;
+  el.querySelectorAll("a.t-head").forEach(a=>{ a.onclick=()=>goTo(a.dataset.target); });
+}
+function goTo(id){
+  activeCat="all"; query=""; document.getElementById("search").value="";
+  syncChips(); render();
+  requestAnimationFrame(()=>{
+    const c=document.getElementById("card-"+id);
+    if(c){ c.scrollIntoView({behavior:"smooth",block:"center"});
+      c.classList.add("flash"); setTimeout(()=>c.classList.remove("flash"),1500); }
+  });
+}
+
+document.getElementById("footer").innerHTML =
+  `Generated ${esc(data.generated||"")} · Every story corroborated by independent reputable sources unless flagged “single source”. Read-state saved in your browser.`;
+
+renderTop5();
+render();
+</script>
+</body>
+</html>

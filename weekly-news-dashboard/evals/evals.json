@@ -1,0 +1,23 @@
+{
+  "skill_name": "weekly-news-dashboard",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Make me a dashboard of the most important news in the last week across science, economics, politics, and my local area. I live in Geneva and work at CERN. Cite reputable sources only.",
+      "expected_output": "A single self-contained HTML file with four category sections; ~4-5 stories each; every story has a plain-language summary, a 'why it matters' line, a date inside the last 7 days, a verification badge, and two independent reputable source links. Geneva-area outlets used for Local.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Catch me up on what happened in the world this week - just economics and politics is fine. I'm based in London.",
+      "expected_output": "HTML dashboard with only Economics and Politics sections, last-7-day window stated, London-area outlets where local context applies, each story double-sourced from reputable outlets, no fabricated links.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Give me a weekly science news briefing - the biggest physics and space stories from the past 7 days, with sources I can trust.",
+      "expected_output": "HTML dashboard focused on Science (physics/space), each story summarized in own words with a significance note, dated within the window, and corroborated by reputable primary/secondary sources (journals, agencies, wire services). Single-source preprint stories clearly flagged.",
+      "files": []
+    }
+  ]
+}

@@ -10,6 +10,7 @@ Repo: https://github.com/AlbertFD/AlbertFD-skills
 - **[learning-map](learning-map/)** — Finds the root of what a learner misunderstands, then builds an interactive HTML lesson around that exact gap.
 - **[living-sketch](living-sketch/)** — Turns a concept, sketch, or diagram into one offline interactive HTML visual, co-built in stages and calibrated to your audience and key takeaway.
 - **[literature-roadmap](literature-roadmap/)** — Turns a research subject into a verified, tiered reading guide as an interactive HTML roadmap: prioritized papers, color-coded study types, cross-corpus synthesis, and persistent per-paper notes.
+- **[weekly-news-dashboard](weekly-news-dashboard/)** — Turns the past week's news into a verified interactive HTML briefing across Science, Economics, Politics, and your local area: plain-language summaries, two independent reputable sources per story, and persistent read-state.
 
 See each skill's own README for full details.
 
