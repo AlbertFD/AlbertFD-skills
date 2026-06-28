@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<!--
+  PRODUCT REVIEW REPORT TEMPLATE
+  ==============================
+  Replace the __REPORT_DATA__ placeholder near the bottom with one JSON object.
+  Everything renders from that object — do not hand-edit the markup for content.
+
+  DATA SHAPE:
+  {
+    "product":    "Sony WH-1000XM5",          // exact model
+    "category":   "Noise-cancelling headphones",
+    "price":      "$348",                       // price you found, as a string
+    "priceNote":  "Amazon, 28 Jun 2026 — list $399", // seller + date + context
+    "region":     "US",
+    "image":      "",                           // optional product image URL (leave "" if none)
+    "useCase":    "Daily commuting and office focus", // what it's being judged for
+
+    "verdict":    "Buy on sale",   // one of: Buy | Buy on sale | Consider | Skip
+    "score":      8.6,            // 1-10, confidence-weighted overall assessment (one decimal ok)
+    "reason":     "Class-leading noise cancelling and comfort; only worth full price if ANC is your priority.",
+
+    // The 5 most important things a buyer should know, most important first.
+    "topThings": [
+      "Best-in-class active noise cancelling, confirmed by lab testing",
+      "Very comfortable for all-day wear",
+      "Battery lasts ~30 hours",
+      "No longer folds flat — bulkier case than the XM4",
+      "Frequently discounted — rarely worth full $399"
+    ],
+    "forWho":     ["Frequent travellers who want the best ANC", "Anyone prioritising comfort for long wear"],
+    "notForWho":  ["Bass-heads who want punch over neutrality", "Buyers on a tight budget — see alternatives"],
+
+    "fakeReviewRisk": "low",   // low | medium | high
+    "fakeReviewNote": "Ratings consistent across retailers; no burst or incentivized-review patterns found.",
+
+    "pillars": {  // each pillar scored 1-10 plus a short label
+      "value":       { "score": 7, "rating": "Good — at sale price", "points": ["...", "..."] },
+      "reliability": { "score": 9, "rating": "Strong", "points": ["...", "..."] },
+      "redflags":    { "score": 8, "rating": "Minor", "points": ["...", "..."] }  // redflags score is "trust" (10 = no red flags, low = serious dealbreakers). If none: rating "None found", points: ["No recurring defects or trust issues surfaced."]
+    },
+
+    "pros": ["Best-in-class ANC", "Very comfortable for long sessions"],
+    "cons": ["No longer folds flat", "Case is bulky"],
+
+    // The most common / representative review sentiment in each tier (one per tier).
+    "voices": {
+      "retailer":  { "quote": "Comfortable and the noise cancelling is incredible — worth it on sale.", "attribution": "Verified-buyer consensus, Amazon", "url": "https://..." },
+      "expert":    { "quote": "Still the ANC benchmark, though the design changes are divisive.", "attribution": "RTINGS", "url": "https://..." },
+      "community": { "quote": "Love mine, but a few owners report headband cracking after a year.", "attribution": "r/headphones", "url": "https://..." }
+    },
+
+    // Every source you actually retrieved this session.
+    "sources": [
+      { "outlet": "Amazon",   "tier": "retailer",  "rating": "4.5 / 5 (12,400 reviews)", "date": "2026-06-28", "url": "https://...", "note": "Distribution healthy; 78% 5-star" },
+      { "outlet": "RTINGS",   "tier": "expert",    "rating": "8.6 / 10",                 "date": "2026-03-10", "url": "https://...", "note": "Lab-tested ANC top of class" },
+      { "outlet": "r/headphones", "tier": "community", "rating": "Mostly positive",      "date": "2026-05-01", "url": "https://...", "note": "Some report headband wear after a year" }
+    ],
+
+    "alternatives": [
+      { "name": "Bose QuietComfort Ultra", "price": "$379", "chooseIf": "You want the most natural ANC and call quality", "tradeoff": "Shorter battery life", "url": "https://..." },
+      { "name": "Sony WH-CH720N",          "price": "$120", "chooseIf": "You want 80% of the experience for a third of the price", "tradeoff": "Weaker ANC, plasticky build", "url": "https://..." }
+    ],
+
+    // Where to actually buy it — real seller links you retrieved this session.
+    "buyLinks": [
+      { "seller": "Amazon",  "price": "$348", "url": "https://..." },
+      { "seller": "Best Buy", "price": "$349", "url": "https://..." }
+    ],
+
+    "generated": "2026-06-28"
+  }
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Product Review</title>
+<style>
+  :root{
+    --bg:#f6f7f9; --card:#ffffff; --ink:#1a1d21; --muted:#5b6470; --line:#e6e9ee;
+    --retailer:#d97706; --retailer-bg:#fef3e2;
+    --expert:#2563eb;   --expert-bg:#e7efff;
+    --community:#16a34a; --community-bg:#e6f6ec;
+    --buy:#16a34a; --sale:#0d9488; --consider:#d97706; --skip:#dc2626;
+    --risk-low:#16a34a; --risk-medium:#d97706; --risk-high:#dc2626;
+    --shadow:0 1px 3px rgba(20,30,50,.06),0 8px 24px rgba(20,30,50,.06);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    padding:32px 20px 80px;}
+  .wrap{max-width:980px;margin:0 auto}
+  h1,h2,h3{margin:0;line-height:1.2}
+  .section{margin-top:28px}
+  .section>h2{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}
+
+  /* Hero */
+  .hero{display:grid;grid-template-columns:1fr auto;gap:24px;padding:26px 28px;align-items:center}
+  .hero .cat{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+  .hero h1{font-size:28px;margin:4px 0 8px}
+  .price{font-size:18px;font-weight:700}
+  .price small{font-weight:500;color:var(--muted);font-size:13px;display:block;margin-top:2px}
+  .verdict-pill{display:inline-block;margin-top:14px;padding:7px 16px;border-radius:999px;color:#fff;font-weight:700;font-size:15px}
+  .reason{margin-top:12px;color:var(--muted);max-width:48ch}
+  .score-ring{width:128px;height:128px;display:grid;place-items:center;border-radius:50%;position:relative}
+  .score-ring .inner{position:absolute;inset:12px;background:var(--card);border-radius:50%;display:grid;place-items:center;text-align:center}
+  .score-ring .num{font-size:34px;font-weight:800;line-height:1}
+  .score-ring .lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+
+  /* For / not for */
+  .twocol{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .mini{padding:18px 20px}
+  .mini h3{font-size:14px;margin-bottom:8px}
+  .mini.good h3{color:var(--buy)} .mini.bad h3{color:var(--skip)}
+  ul.clean{margin:0;padding-left:18px} ul.clean li{margin:5px 0}
+
+  /* Pillars */
+  .pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .pillar{padding:18px 20px}
+  .pillar h3{font-size:15px;display:flex;align-items:center;gap:8px}
+  .pillar .pscore{margin-left:auto;font-weight:800;font-size:18px}
+  .pillar .pscore small{font-weight:600;font-size:11px;color:var(--muted)}
+  .pillar .rating{margin:8px 0 10px;font-weight:700;font-size:14px}
+  .dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+
+  /* Source table */
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+  .tier-badge{display:inline-block;padding:3px 9px;border-radius:999px;font-size:12px;font-weight:600}
+  .tier-retailer{background:var(--retailer-bg);color:var(--retailer)}
+  .tier-expert{background:var(--expert-bg);color:var(--expert)}
+  .tier-community{background:var(--community-bg);color:var(--community)}
+  a{color:var(--expert);text-decoration:none} a:hover{text-decoration:underline}
+  .src-counts{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+  .count-chip{font-size:13px;padding:5px 12px;border-radius:999px;border:1px solid var(--line);font-weight:600}
+
+  /* Risk banner */
+  .risk{display:flex;align-items:center;gap:12px;padding:14px 18px;border-radius:12px;margin-top:14px;font-size:14px}
+  .risk b{text-transform:capitalize}
+
+  /* Alternatives */
+  .alts{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}
+  .alt{padding:18px 20px}
+  .alt h3{font-size:16px} .alt .ap{color:var(--muted);font-weight:700;margin:4px 0 10px}
+  .alt .ci{font-size:14px}.alt .to{font-size:13px;color:var(--muted);margin-top:8px}
+
+  /* Top 5 */
+  .toplist{padding:8px 8px}
+  .topitem{display:flex;align-items:flex-start;gap:14px;padding:13px 16px;border-bottom:1px solid var(--line);font-size:15px}
+  .topitem:last-child{border-bottom:none}
+  .topnum{flex:none;width:26px;height:26px;border-radius:50%;background:var(--expert-bg);color:var(--expert);font-weight:800;font-size:14px;display:grid;place-items:center}
+
+  /* Voices (common review per tier) */
+  .voices{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .voice{padding:18px 20px}
+  .voice blockquote{margin:12px 0 10px;font-size:15px;line-height:1.5}
+  .voice .vattr{font-size:12px;color:var(--muted)}
+
+  /* Buy links */
+  .buyrow{display:flex;gap:12px;flex-wrap:wrap}
+  .buybtn{display:flex;align-items:center;gap:10px;padding:12px 18px;border:1px solid var(--line);border-radius:12px;background:var(--card);box-shadow:var(--shadow);font-weight:600;color:var(--ink)}
+  .buybtn:hover{border-color:var(--expert);text-decoration:none}
+  .buybtn b{color:var(--expert)}
+
+  .foot{margin-top:36px;color:var(--muted);font-size:12px;text-align:center}
+
+  @media (max-width:700px){
+    .hero{grid-template-columns:1fr}.twocol,.pillars,.voices{grid-template-columns:1fr}
+    .score-ring{justify-self:start}
+  }
+  @media print{
+    body{background:#fff;padding:0}.card{box-shadow:none}
+    a{color:var(--ink)}
+  }
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+
+<script id="data" type="application/json">
+__REPORT_DATA__
+</script>
+
+<script>
+(function(){
+  const D = JSON.parse(document.getElementById('data').textContent);
+  const esc = s => String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const verdictColor = {'Buy':'var(--buy)','Buy on sale':'var(--sale)','Consider':'var(--consider)','Skip':'var(--skip)'};
+  const vc = verdictColor[D.verdict] || 'var(--consider)';
+  const riskColor = {low:'var(--risk-low)',medium:'var(--risk-medium)',high:'var(--risk-high)'};
+  const riskBg   = {low:'var(--community-bg)',medium:'var(--retailer-bg)',high:'#fdeaea'};
+
+  // scores are on a 1-10 scale; ring fills proportionally, color follows verdict
+  const ringDeg = Math.max(0,Math.min(10,Number(D.score)||0))*36;
+
+  const li = a => (a||[]).map(x=>`<li>${esc(x)}</li>`).join('');
+
+  function pillar(key,title,emoji){
+    const p = (D.pillars||{})[key]||{};
+    const badge = (p.score!=null && p.score!=='')
+      ? `<span class="pscore">${esc(p.score)}<small>/10</small></span>` : '';
+    return `<div class="pillar card">
+      <h3>${emoji} ${esc(title)} ${badge}</h3>
+      <div class="rating">${esc(p.rating||'—')}</div>
+      <ul class="clean">${li(p.points)}</ul>
+    </div>`;
+  }
+
+  const counts = (D.sources||[]).reduce((m,s)=>{m[s.tier]=(m[s.tier]||0)+1;return m;},{});
+  const countChip = (t,label)=>counts[t]?`<span class="count-chip tier-${t}">${counts[t]} ${label}</span>`:'';
+
+  const srcRows = (D.sources||[]).map(s=>`
+    <tr>
+      <td><span class="tier-badge tier-${esc(s.tier)}">${esc(s.tier)}</span></td>
+      <td><b>${esc(s.outlet)}</b>${s.note?`<div style="color:var(--muted);font-size:13px;margin-top:3px">${esc(s.note)}</div>`:''}</td>
+      <td>${esc(s.rating||'—')}</td>
+      <td>${esc(s.date||'')}</td>
+      <td>${s.url?`<a href="${esc(s.url)}" target="_blank" rel="noopener">view ↗</a>`:''}</td>
+    </tr>`).join('');
+
+  const alts = (D.alternatives||[]).map(a=>`
+    <div class="alt card">
+      <h3>${esc(a.name)}</h3>
+      <div class="ap">${esc(a.price||'')}</div>
+      <div class="ci"><b>Choose if:</b> ${esc(a.chooseIf||'')}</div>
+      ${a.tradeoff?`<div class="to">Tradeoff: ${esc(a.tradeoff)}</div>`:''}
+      ${a.url?`<div style="margin-top:10px"><a href="${esc(a.url)}" target="_blank" rel="noopener">view ↗</a></div>`:''}
+    </div>`).join('');
+
+  const risk = (D.fakeReviewRisk||'').toLowerCase();
+
+  const topThings = (D.topThings||[]).slice(0,5).map((t,i)=>`
+    <div class="topitem"><span class="topnum">${i+1}</span><span>${esc(t)}</span></div>`).join('');
+
+  function voiceCard(tier,label){
+    const v = (D.voices||{})[tier]; if(!v) return '';
+    return `<div class="voice card">
+      <span class="tier-badge tier-${tier}">${label}</span>
+      <blockquote>“${esc(v.quote)}”</blockquote>
+      <div class="vattr">${esc(v.attribution||'')} ${v.url?`· <a href="${esc(v.url)}" target="_blank" rel="noopener">source ↗</a>`:''}</div>
+    </div>`;
+  }
+
+  const buyLinks = (D.buyLinks||[]).map(b=>`
+    <a class="buybtn" href="${esc(b.url)}" target="_blank" rel="noopener">
+      <span>${esc(b.seller)}</span>${b.price?`<b>${esc(b.price)}</b>`:''}
+    </a>`).join('');
+
+  document.getElementById('app').innerHTML = `
+    <div class="hero card">
+      <div>
+        <div class="cat">${esc(D.category||'')}${D.region?' · '+esc(D.region):''}</div>
+        <h1>${esc(D.product||'Product')}</h1>
+        ${D.price?`<div class="price">${esc(D.price)}<small>${esc(D.priceNote||'')}</small></div>`:''}
+        <div><span class="verdict-pill" style="background:${vc}">${esc(D.verdict||'Consider')}</span></div>
+        <p class="reason">${esc(D.reason||'')}</p>
+      </div>
+      <div class="score-ring" style="background:conic-gradient(${vc} ${ringDeg}deg, var(--line) 0)">
+        <div class="inner"><div><div class="num">${esc(D.score)}</div><div class="lbl">/ 10</div></div></div>
+      </div>
+    </div>
+
+    ${topThings?`<div class="section">
+      <h2>Top 5 things to know</h2>
+      <div class="card toplist">${topThings}</div>
+    </div>`:''}
+
+    <div class="section">
+      <div class="twocol">
+        <div class="mini card good"><h3>✓ Right for</h3><ul class="clean">${li(D.forWho)}</ul></div>
+        <div class="mini card bad"><h3>✗ Look elsewhere if</h3><ul class="clean">${li(D.notForWho)}</ul></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Assessment</h2>
+      <div class="pillars">
+        ${pillar('value','Value for money','💰')}
+        ${pillar('reliability','Reliability & longevity','🛡️')}
+        ${pillar('redflags','Red flags','🚩')}
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Pros &amp; cons</h2>
+      <div class="twocol">
+        <div class="mini card good"><h3>Pros</h3><ul class="clean">${li(D.pros)}</ul></div>
+        <div class="mini card bad"><h3>Cons</h3><ul class="clean">${li(D.cons)}</ul></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Where the reviews come from</h2>
+      <div class="src-counts">
+        ${countChip('retailer','retailer')}
+        ${countChip('expert','expert')}
+        ${countChip('community','community')}
+      </div>
+      <div class="card" style="overflow:hidden">
+        <table>
+          <thead><tr><th>Tier</th><th>Source</th><th>Rating / verdict</th><th>Date</th><th>Link</th></tr></thead>
+          <tbody>${srcRows||'<tr><td colspan="5">No sources recorded.</td></tr>'}</tbody>
+        </table>
+      </div>
+      ${risk?`<div class="risk" style="background:${riskBg[risk]||'var(--retailer-bg)'};color:${riskColor[risk]||'var(--ink)'}">
+        <span class="dot" style="background:${riskColor[risk]||'var(--ink)'}"></span>
+        <div><b>Fake-review risk: ${esc(D.fakeReviewRisk)}</b> — <span style="color:var(--ink)">${esc(D.fakeReviewNote||'')}</span></div>
+      </div>`:''}
+    </div>
+
+    ${(D.voices&&(D.voices.retailer||D.voices.expert||D.voices.community))?`<div class="section">
+      <h2>What reviewers most commonly say</h2>
+      <div class="voices">
+        ${voiceCard('retailer','Retailer')}
+        ${voiceCard('expert','Expert')}
+        ${voiceCard('community','Community')}
+      </div>
+    </div>`:''}
+
+    ${(D.alternatives&&D.alternatives.length)?`<div class="section">
+      <h2>Alternatives to consider</h2>
+      <div class="alts">${alts}</div>
+    </div>`:''}
+
+    ${buyLinks?`<div class="section">
+      <h2>Where to buy</h2>
+      <div class="buyrow">${buyLinks}</div>
+    </div>`:''}
+
+    <div class="foot">Generated ${esc(D.generated||'')} · Ratings, prices and links reflect sources retrieved at report time and may change.</div>
+  `;
+  document.title = (D.product||'Product') + ' — Review';
+})();
+</script>
+</body>
+</html>

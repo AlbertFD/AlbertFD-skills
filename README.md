@@ -11,6 +11,7 @@ Repo: https://github.com/AlbertFD/AlbertFD-skills
 - **[living-sketch](living-sketch/)** — Turns a concept, sketch, or diagram into one offline interactive HTML visual, co-built in stages and calibrated to your audience and key takeaway.
 - **[literature-roadmap](literature-roadmap/)** — Turns a research subject into a verified, tiered reading guide as an interactive HTML roadmap: prioritized papers, color-coded study types, cross-corpus synthesis, and persistent per-paper notes.
 - **[weekly-news-dashboard](weekly-news-dashboard/)** — Turns the past week's news into a verified interactive HTML briefing across Science, Economics, Politics, and your local area: plain-language summaries, two independent reputable sources per story, and persistent read-state.
+- **[product-review](product-review/)** — Researches a product across retailer, expert, and community reviews and delivers a verified buy/skip verdict as an interactive HTML report: value/reliability/red-flag assessment, fake-review screening, a source-provenance table, and ranked alternatives.
 
 See each skill's own README for full details.
 

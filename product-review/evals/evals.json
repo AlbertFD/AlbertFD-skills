@@ -1,0 +1,23 @@
+{
+  "skill_name": "product-review",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Thinking about buying the Sony WH-1000XM5 headphones for commuting and working in a noisy open-plan office. Are they actually worth it at current prices, or is there something better? Budget is flexible but I don't want to overpay.",
+      "expected_output": "An interactive HTML report: clear Buy/Buy-on-sale/Consider/Skip verdict with a 0-100 score, value/reliability/red-flag assessment, a source-provenance table spanning retailer + expert + community sources with real links, a fake-review-risk indicator, and 2-4 real alternatives (e.g. Bose QC Ultra, a cheaper Sony). All ratings/prices/links retrieved this session, none fabricated.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "What's the best budget espresso machine under $300 for a beginner? I want something reliable that won't break in a year.",
+      "expected_output": "Treated as a category review: shortlists 3-5 contenders, reviews the top pick in depth as an HTML report, with the others as alternatives. Verdict weights reliability/longevity heavily per the request. Sources span all three tiers with real links.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "I found this air fryer on Amazon with 4.7 stars and 30,000 reviews from a brand I've never heard of. Should I trust it? https://www.amazon.com/example-air-fryer",
+      "expected_output": "Actively screens for fake/incentivized reviews (no-name brand + huge count is a red flag), reports the fake-review-risk prominently, leans the verdict on expert/community evidence, and offers reputable alternatives. HTML report with provenance table making the trust assessment obvious.",
+      "files": []
+    }
+  ]
+}
