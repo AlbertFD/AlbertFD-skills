@@ -1,0 +1,26 @@
+{
+  "skill_name": "language-translator",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "Translate this to Spanish: \"The weather is beautiful today, and I can't wait to go for a run.\"",
+      "expected_output": "A short, faithful Spanish translation in the parallel original/translation format, source and target language stated, no technical mode triggered.",
+      "files": [],
+      "assertions": []
+    },
+    {
+      "id": 1,
+      "prompt": "Can you tell me what this German physics abstract says in English? \"Wir berichten über die Messung des Wirkungsquerschnitts der Antiproton-Helium-Streuung bei niedrigen Energien. Die Ergebnisse deuten auf eine mögliche Resonanz hin, die jedoch statistisch nicht signifikant ist.\"",
+      "expected_output": "Detects German source, English target, triggers technical mode, preserves hedging ('deuten auf...hin', 'nicht signifikant'), cites terminology choices (Wirkungsquerschnitt -> cross section, Antiproton-Helium-Streuung -> antiproton-helium scattering) with a source/convention noted, parallel original/translation format.",
+      "files": [],
+      "assertions": []
+    },
+    {
+      "id": 2,
+      "prompt": "Translate this French sentence to English, it's got an idiom in it I think: \"Il a mis la charrue avant les boeufs en achetant l'équipement avant d'avoir confirmé le financement.\"",
+      "expected_output": "Detects the idiom 'mettre la charrue avant les boeufs' (put the cart before the horse), translates meaning faithfully, explicitly flags that an idiom substitution was made rather than silently swapping it in, parallel original/translation format.",
+      "files": [],
+      "assertions": []
+    }
+  ]
+}

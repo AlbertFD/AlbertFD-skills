@@ -9,6 +9,7 @@ paper-dashboard-workspace/
 learning-map-workspace/
 literature-roadmap-workspace/
 weekly-news-dashboard-workspace/
+language-translator-workspace/
 
 # packaged skill files (build artifacts)
 build/
