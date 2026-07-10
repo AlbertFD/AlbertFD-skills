@@ -13,6 +13,7 @@ Repo: https://github.com/AlbertFD/AlbertFD-skills
 - **[weekly-news-dashboard](weekly-news-dashboard/)** — Turns the past week's news into a verified interactive HTML briefing across Science, Economics, Politics, and your local area: plain-language summaries, two independent reputable sources per story, and persistent read-state.
 - **[product-review](product-review/)** — Researches a product across retailer, expert, and community reviews and delivers a verified buy/skip verdict as an interactive HTML report: value/reliability/red-flag assessment, fake-review screening, a source-provenance table, and ranked alternatives.
 - **[language-translator](language-translator/)** — Detects the source language and translates text with fidelity over fluency: side-by-side original/translation, technical-mode terminology citations, and a key-vocabulary table for learning as you go.
+- **[quiz-maker](quiz-maker/)** — Builds a self-contained interactive HTML quiz on any topic. Asks your difficulty level first (Foundational → PhD/Research), then generates MCQ, numeric, and open questions with rendered equations, step-by-step derivations, plain-language explanations, and a real citation on every answer.
 
 See each skill's own README for full details.
 
