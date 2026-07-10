@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz</title>
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] },
+    svg: { fontCache: 'global' }
+  };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>
+<style>
+  :root{
+    --bg:#0f1420; --panel:#171e2e; --panel2:#1e2739; --ink:#e8ecf4; --muted:#9aa6bd;
+    --line:#2a344a; --accent:#6ea8fe; --accent2:#8b7cf6;
+    --good:#3ecf8e; --good-bg:#12301f; --bad:#f2708b; --bad-bg:#33131d;
+    --chip:#243049;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:linear-gradient(180deg,#0c101a,#0f1420 40%); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.55; padding:32px 16px 96px;
+  }
+  .wrap{max-width:780px; margin:0 auto}
+  header.top{margin-bottom:22px}
+  .kicker{font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted)}
+  h1{font-size:26px; margin:6px 0 10px; line-height:1.25}
+  .intro{color:var(--muted); margin:0 0 14px}
+  .badges{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+  .badge{background:var(--chip); border:1px solid var(--line); color:var(--ink);
+    padding:5px 12px; border-radius:999px; font-size:13px; font-weight:600}
+  .badge.diff{background:linear-gradient(90deg,var(--accent),var(--accent2)); border:none; color:#0b1020}
+  .progress{height:6px; background:var(--panel2); border-radius:999px; margin:18px 0 4px; overflow:hidden}
+  .progress > i{display:block; height:100%; width:0;
+    background:linear-gradient(90deg,var(--accent),var(--accent2)); transition:width .35s ease}
+  .meta{display:flex; justify-content:space-between; font-size:13px; color:var(--muted)}
+
+  .card{background:var(--panel); border:1px solid var(--line); border-radius:16px;
+    padding:22px; margin:18px 0; box-shadow:0 8px 30px rgba(0,0,0,.25)}
+  .qnum{font-size:12px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted)}
+  .qtype{float:right; font-size:11px; color:var(--muted); border:1px solid var(--line);
+    padding:2px 8px; border-radius:999px; text-transform:uppercase; letter-spacing:.08em}
+  .prompt{font-size:18px; margin:8px 0 16px}
+
+  .opt{display:block; width:100%; text-align:left; background:var(--panel2); color:var(--ink);
+    border:1px solid var(--line); border-radius:12px; padding:13px 15px; margin:9px 0;
+    font-size:15px; cursor:pointer; transition:border-color .15s, background .15s, transform .05s}
+  .opt:hover{border-color:var(--accent)}
+  .opt:active{transform:translateY(1px)}
+  .opt.correct{background:var(--good-bg); border-color:var(--good)}
+  .opt.wrong{background:var(--bad-bg); border-color:var(--bad)}
+  .opt.disabled{cursor:default; opacity:.85}
+  .opt .mark{float:right; font-weight:700}
+  .opt.correct .mark{color:var(--good)} .opt.wrong .mark{color:var(--bad)}
+
+  .numrow{display:flex; gap:10px; flex-wrap:wrap}
+  input[type=text]{background:var(--panel2); border:1px solid var(--line); color:var(--ink);
+    border-radius:12px; padding:12px 14px; font-size:15px; flex:1; min-width:160px}
+  input[type=text]:focus{outline:none; border-color:var(--accent)}
+
+  button.act{background:linear-gradient(90deg,var(--accent),var(--accent2)); color:#0b1020;
+    border:none; border-radius:12px; padding:12px 18px; font-size:14px; font-weight:700; cursor:pointer}
+  button.ghost{background:transparent; color:var(--ink); border:1px solid var(--line);
+    border-radius:12px; padding:11px 16px; font-size:14px; cursor:pointer}
+  button:disabled{opacity:.4; cursor:default}
+  .selfmark{display:flex; gap:10px; margin-top:12px}
+
+  .feedback{margin-top:16px; border-top:1px dashed var(--line); padding-top:14px; display:none}
+  .verdict{font-weight:700; margin-bottom:8px}
+  .verdict.good{color:var(--good)} .verdict.bad{color:var(--bad)}
+  .explain{color:#dfe5f1}
+  .modelans{background:var(--panel2); border-left:3px solid var(--accent); border-radius:8px;
+    padding:10px 14px; margin:10px 0; color:#dfe5f1}
+
+  .deriv{margin:14px 0 4px}
+  .deriv h4{margin:0 0 8px; font-size:13px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted)}
+  .step{background:var(--panel2); border:1px solid var(--line); border-radius:10px;
+    padding:10px 14px; margin:8px 0; display:none}
+  .step.show{display:block; animation:fade .25s ease}
+  @keyframes fade{from{opacity:0; transform:translateY(4px)}to{opacity:1; transform:none}}
+
+  .cites{margin-top:14px; font-size:13px; color:var(--muted)}
+  .cites h4{margin:0 0 6px; font-size:12px; letter-spacing:.08em; text-transform:uppercase}
+  .cites li{margin:3px 0}
+  .cites a{color:var(--accent); text-decoration:none} .cites a:hover{text-decoration:underline}
+
+  .nav{display:flex; justify-content:space-between; margin-top:20px}
+  .summary{text-align:center; padding:30px 20px}
+  .score{font-size:46px; font-weight:800;
+    background:linear-gradient(90deg,var(--accent),var(--accent2));
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent}
+  .footer{margin-top:26px; text-align:center; color:var(--muted); font-size:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="kicker">Interactive Quiz</div>
+    <h1 id="title"></h1>
+    <p class="intro" id="intro"></p>
+    <div class="badges">
+      <span class="badge diff" id="diffBadge"></span>
+      <span class="badge" id="countBadge"></span>
+    </div>
+    <div class="progress"><i id="bar"></i></div>
+    <div class="meta"><span id="posLabel"></span><span id="scoreLabel"></span></div>
+  </header>
+
+  <main id="stage"></main>
+
+  <div class="footer">Built with the quiz-maker skill · check every citation before you rely on it.</div>
+</div>
+
+<script>
+const QUIZ = /*__QUIZ_DATA__*/;
+
+/* ---------- state ---------- */
+let idx = 0;
+const state = QUIZ.questions.map(() => ({answered:false, correct:false}));
+
+/* ---------- helpers ---------- */
+const $ = sel => document.querySelector(sel);
+function typeset(el){ if(window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([el]); }
+function scored(){ return state.filter(s=>s.answered).length; }
+function correctCount(){ return state.filter(s=>s.correct).length; }
+
+function paintHeader(){
+  $('#title').textContent = QUIZ.topic || 'Quiz';
+  $('#intro').textContent = QUIZ.intro || '';
+  if(!QUIZ.intro) $('#intro').style.display='none';
+  $('#diffBadge').textContent = QUIZ.difficulty || '';
+  $('#countBadge').textContent = QUIZ.questions.length + ' questions';
+  updateBar();
+}
+function updateBar(){
+  const done = state.filter(s=>s.answered).length;
+  $('#bar').style.width = (done/QUIZ.questions.length*100) + '%';
+  $('#posLabel').textContent = 'Question ' + (idx+1) + ' of ' + QUIZ.questions.length;
+  $('#scoreLabel').textContent = 'Score: ' + correctCount() + ' / ' + QUIZ.questions.length;
+}
+
+/* ---------- citations + derivation blocks ---------- */
+function citeHTML(q){
+  if(!q.citations || !q.citations.length) return '';
+  const items = q.citations.map(c => {
+    const label = c.label || c.url || 'source';
+    return '<li>' + (c.url ? '<a href="'+c.url+'" target="_blank" rel="noopener">'+label+'</a>' : label) + '</li>';
+  }).join('');
+  return '<div class="cites"><h4>Sources</h4><ul>'+items+'</ul></div>';
+}
+function derivHTML(q){
+  if(!q.derivation || !q.derivation.length) return '';
+  const steps = q.derivation.map((s,i)=>'<div class="step" data-step="'+i+'">'+s+'</div>').join('');
+  return '<div class="deriv"><h4>Derivation</h4>'+steps+
+         '<button class="ghost" id="stepBtn">Show first step</button></div>';
+}
+function wireDeriv(card){
+  const btn = card.querySelector('#stepBtn');
+  if(!btn) return;
+  const steps = card.querySelectorAll('.step');
+  let shown = 0;
+  btn.addEventListener('click', ()=>{
+    if(shown < steps.length){
+      steps[shown].classList.add('show');
+      typeset(steps[shown]);
+      shown++;
+      btn.textContent = shown < steps.length ? 'Show next step ('+shown+'/'+steps.length+')' : 'All steps shown';
+      if(shown === steps.length) btn.disabled = true;
+    }
+  });
+}
+
+/* ---------- render one question ---------- */
+function render(){
+  updateBar();
+  const q = QUIZ.questions[idx];
+  const s = state[idx];
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.innerHTML =
+    '<div class="qnum">Question ' + (idx+1) +
+    '<span class="qtype">'+(q.type||'mcq')+'</span></div>' +
+    '<div class="prompt">'+q.prompt+'</div>' +
+    '<div class="body"></div>' +
+    '<div class="feedback"></div>' +
+    '<div class="nav">' +
+      '<button class="ghost" id="prev">‹ Prev</button>' +
+      '<button class="act" id="next">'+(idx===QUIZ.questions.length-1?'Finish':'Next ›')+'</button>' +
+    '</div>';
+  const body = card.querySelector('.body');
+  const fb = card.querySelector('.feedback');
+
+  if(q.type === 'numeric'){ renderNumeric(q,s,body,fb); }
+  else if(q.type === 'open'){ renderOpen(q,s,body,fb); }
+  else { renderMCQ(q,s,body,fb); }
+
+  card.querySelector('#prev').disabled = idx===0;
+  card.querySelector('#prev').addEventListener('click', ()=>{ if(idx>0){idx--; swap();} });
+  card.querySelector('#next').addEventListener('click', ()=>{
+    if(idx===QUIZ.questions.length-1){ showSummary(); } else { idx++; swap(); }
+  });
+
+  const stage = $('#stage');
+  stage.innerHTML='';
+  stage.appendChild(card);
+  typeset(card);
+  wireDeriv(card);
+}
+function swap(){ render(); }
+
+/* ---------- feedback panel ---------- */
+function reveal(q, fb, wasCorrect, opts){
+  fb.style.display='block';
+  let html='';
+  if(opts && opts.selfmark){
+    html += '<div class="verdict">Model answer</div>';
+    html += q.modelAnswer ? '<div class="modelans">'+q.modelAnswer+'</div>' : '';
+  } else {
+    html += '<div class="verdict '+(wasCorrect?'good':'bad')+'">'+
+            (wasCorrect?'✓ Correct':'✗ Not quite')+'</div>';
+  }
+  if(q.explanation) html += '<div class="explain">'+q.explanation+'</div>';
+  html += derivHTML(q);
+  html += citeHTML(q);
+  fb.innerHTML = html;
+  typeset(fb);
+  wireDeriv(fb);
+}
+
+/* ---------- MCQ ---------- */
+function renderMCQ(q,s,body,fb){
+  q.options.forEach((opt,i)=>{
+    const b=document.createElement('button');
+    b.className='opt'; b.innerHTML=opt+'<span class="mark"></span>';
+    b.addEventListener('click', ()=>{
+      if(s.answered) return;
+      s.answered=true; s.correct = (i===q.answer);
+      body.querySelectorAll('.opt').forEach((el,j)=>{
+        el.classList.add('disabled');
+        if(j===q.answer){ el.classList.add('correct'); el.querySelector('.mark').textContent='✓'; }
+        if(j===i && i!==q.answer){ el.classList.add('wrong'); el.querySelector('.mark').textContent='✗'; }
+      });
+      reveal(q, fb, s.correct);
+    });
+    body.appendChild(b);
+  });
+  if(s.answered){ // re-entering an answered question
+    body.querySelectorAll('.opt').forEach((el,j)=>{
+      el.classList.add('disabled');
+      if(j===q.answer){ el.classList.add('correct'); el.querySelector('.mark').textContent='✓'; }
+    });
+    reveal(q, fb, s.correct);
+  }
+}
+
+/* ---------- numeric ---------- */
+function renderNumeric(q,s,body,fb){
+  const row=document.createElement('div'); row.className='numrow';
+  row.innerHTML='<input type="text" id="numin" placeholder="Your answer" '+(s.answered?'disabled':'')+'>'+
+                '<button class="act" id="check">Check</button>';
+  body.appendChild(row);
+  const check=()=>{
+    if(s.answered) return;
+    const val=parseFloat(body.querySelector('#numin').value.replace(',','.'));
+    const tol=(q.tolerance!=null)?q.tolerance:0.01;
+    s.answered=true; s.correct = !isNaN(val) && Math.abs(val-q.answer)<=tol;
+    body.querySelector('#numin').disabled=true;
+    body.querySelector('#check').disabled=true;
+    reveal(q, fb, s.correct);
+    const extra=document.createElement('div');
+    extra.className='explain'; extra.style.marginTop='6px';
+    extra.innerHTML='Accepted answer: <b>'+q.answer+'</b>';
+    fb.insertBefore(extra, fb.firstChild.nextSibling);
+    typeset(extra);
+  };
+  body.querySelector('#check').addEventListener('click', check);
+  body.querySelector('#numin').addEventListener('keydown', e=>{ if(e.key==='Enter') check(); });
+  if(s.answered) reveal(q, fb, s.correct);
+}
+
+/* ---------- open / self-graded ---------- */
+function renderOpen(q,s,body,fb){
+  const wrap=document.createElement('div');
+  wrap.innerHTML='<button class="act" id="showModel">Reveal model answer</button>'+
+    '<div class="selfmark" id="sm" style="display:none">'+
+      '<button class="ghost" id="gotit">I got it right</button>'+
+      '<button class="ghost" id="missed">I missed it</button></div>';
+  body.appendChild(wrap);
+  const finish=(correct)=>{
+    s.answered=true; s.correct=correct;
+    body.querySelector('#sm').style.display='none';
+    updateBar();
+  };
+  body.querySelector('#showModel').addEventListener('click', ()=>{
+    reveal(q, fb, false, {selfmark:true});
+    body.querySelector('#showModel').disabled=true;
+    if(!s.answered) body.querySelector('#sm').style.display='flex';
+  });
+  body.querySelector('#gotit').addEventListener('click', ()=>finish(true));
+  body.querySelector('#missed').addEventListener('click', ()=>finish(false));
+  if(s.answered){ reveal(q, fb, false, {selfmark:true}); body.querySelector('#showModel').disabled=true; }
+}
+
+/* ---------- summary ---------- */
+function showSummary(){
+  const n=QUIZ.questions.length, c=correctCount();
+  const pct=Math.round(c/n*100);
+  let note = pct>=85 ? 'Excellent command of this material.' :
+             pct>=60 ? 'Solid — review the ones you missed.' :
+             pct>=35 ? 'Getting there. Re-read the explanations and retry.' :
+                       'Worth another pass through the basics.';
+  const stage=$('#stage');
+  stage.innerHTML =
+    '<div class="card summary">' +
+      '<div class="kicker">Result</div>' +
+      '<div class="score">'+c+' / '+n+'</div>' +
+      '<div style="color:var(--muted); margin:6px 0 4px">'+pct+'% · '+note+'</div>' +
+      '<div class="nav" style="justify-content:center; gap:12px; margin-top:20px">' +
+        '<button class="ghost" id="review">Review answers</button>' +
+        '<button class="act" id="restart">Retake</button>' +
+      '</div>' +
+    '</div>';
+  $('#bar').style.width='100%';
+  $('#scoreLabel').textContent='Score: '+c+' / '+n;
+  $('#review').addEventListener('click', ()=>{ idx=0; render(); });
+  $('#restart').addEventListener('click', ()=>{
+    state.forEach(s=>{s.answered=false; s.correct=false;}); idx=0; render();
+  });
+}
+
+/* ---------- boot ---------- */
+paintHeader();
+render();
+</script>
+</body>
+</html>

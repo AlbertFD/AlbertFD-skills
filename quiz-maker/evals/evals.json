@@ -1,0 +1,48 @@
+{
+  "skill_name": "quiz-maker",
+  "evals": [
+    {
+      "id": 0,
+      "name": "physics-derivation-quiz",
+      "prompt": "Quiz me on special relativity — specifically time dilation and length contraction. I want the equations and derivations shown, PhD qualifying-exam level.",
+      "expected_output": "An interactive HTML quiz. Skill should ask/confirm difficulty (PhD/Research) before generating, then produce MathJax-rendered questions with derivations and real citations.",
+      "files": [],
+      "assertions": [
+        {"text": "Asked the user to choose a difficulty level before generating the quiz"},
+        {"text": "Output is a single self-contained .html file that opens as an interactive quiz"},
+        {"text": "Equations are present and use LaTeX/MathJax delimiters, not plain text"},
+        {"text": "At least one question includes a step-by-step derivation"},
+        {"text": "Every explanation carries at least one specific, real citation (named source or URL/DOI), none fabricated"},
+        {"text": "Difficulty is reflected in the content depth (graduate/PhD level, not beginner)"}
+      ]
+    },
+    {
+      "id": 1,
+      "name": "general-topic-quiz",
+      "prompt": "Make me a 10-question practice quiz on the French Revolution to test myself before a class.",
+      "expected_output": "Skill asks difficulty (and confirms count ~10), then an interactive HTML quiz with clear explanations and citations to reputable history sources. Math/derivation optional here.",
+      "files": [],
+      "assertions": [
+        {"text": "Asked for difficulty level before generating"},
+        {"text": "Produced roughly 10 questions as requested"},
+        {"text": "Output is an interactive self-contained HTML quiz with feedback and scoring"},
+        {"text": "Explanations are simplified and clear, each with a real citation"},
+        {"text": "Multiple-choice distractors are plausible, not throwaway"}
+      ]
+    },
+    {
+      "id": 2,
+      "name": "casual-stated-difficulty",
+      "prompt": "quiz me on how neural network backprop works, keep it fairly beginner friendly",
+      "expected_output": "User already implied difficulty (Foundational). Skill should map/confirm rather than re-ask from scratch, then build an interactive HTML quiz with intuitive explanations and citations, minimal heavy derivation.",
+      "files": [],
+      "assertions": [
+        {"text": "Recognized the stated difficulty (beginner/Foundational) and confirmed rather than ignoring it"},
+        {"text": "Output is an interactive self-contained HTML quiz"},
+        {"text": "Explanations use plain language appropriate to a beginner"},
+        {"text": "Includes real citations for explanations"},
+        {"text": "Equations, if any, render via MathJax rather than raw LaTeX text"}
+      ]
+    }
+  ]
+}
