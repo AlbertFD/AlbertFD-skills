@@ -1,0 +1,23 @@
+{
+  "skill_name": "code-converter",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Convert this Python function to Go. It needs to behave identically:\n\ndef running_stats(nums):\n    if not nums:\n        return {\"mean\": 0.0, \"max\": None, \"count\": 0}\n    total = 0\n    mx = nums[0]\n    for n in nums:\n        total += n\n        if n > mx:\n            mx = n\n    return {\"mean\": total / len(nums), \"max\": mx, \"count\": len(nums)}",
+      "expected_output": "Idiomatic Go with the same behavior: empty slice returns mean 0.0 / count 0 / a null-equivalent max, integer sum but float mean (total/len must be float division like Python 3), max computed correctly. Plus a verification note showing outputs match on a few inputs including the empty case.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "I have this JavaScript utility and I want it in Python, exactly the same logic. Watch the edge cases.\n\nfunction slugify(title) {\n  if (title == null) return '';\n  return title\n    .trim()\n    .toLowerCase()\n    .replace(/[^a-z0-9\\s-]/g, '')\n    .replace(/\\s+/g, '-')\n    .replace(/-+/g, '-')\n    .replace(/^-|-$/g, '');\n}",
+      "expected_output": "Python function that reproduces the same slug output including the null/None guard (JS `== null` catches both null and undefined), regex behavior, trimming and collapsing of dashes. Verification comparing outputs on several titles including empty string, leading/trailing spaces, and special characters.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "port this to C++ from Java, keep it behaving the same:\n\npublic static int binarySearch(int[] a, int target) {\n    int lo = 0, hi = a.length - 1;\n    while (lo <= hi) {\n        int mid = (lo + hi) >>> 1;\n        if (a[mid] == target) return mid;\n        else if (a[mid] < target) lo = mid + 1;\n        else hi = mid - 1;\n    }\n    return -1;\n}",
+      "expected_output": "C++ function preserving behavior, including the unsigned right shift `>>>` used to avoid integer overflow in the midpoint (must be reproduced correctly in C++, e.g. via unsigned arithmetic, not plain (lo+hi)/2). Returns index or -1. Verification by tracing/running representative arrays including not-found and empty.",
+      "files": []
+    }
+  ]
+}
