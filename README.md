@@ -15,6 +15,7 @@ Repo: https://github.com/AlbertFD/AlbertFD-skills
 - **[language-translator](language-translator/)** — Detects the source language and translates text with fidelity over fluency: side-by-side original/translation, technical-mode terminology citations, and a key-vocabulary table for learning as you go.
 - **[quiz-maker](quiz-maker/)** — Builds a self-contained interactive HTML quiz on any topic. Asks your difficulty level first (Foundational → PhD/Research), then generates MCQ, numeric, and open questions with rendered equations, step-by-step derivations, plain-language explanations, and a real citation on every answer.
 - **[code-converter](code-converter/)** — Ports source code between any two languages while preserving behavior exactly: same inputs, same outputs, same edge cases. Verifies equivalence by running both versions where possible (or a rigorous static audit where not) and delivers an equivalence report with every judgment call flagged.
+- **[word-of-the-day](word-of-the-day/)** — Delivers one new vocabulary word per day with definition, usage, a natural example, and a cited source. Rotates the theme by weekday (advanced English, physics, Italian, GRE/academic, French) and logs history so words never repeat.
 
 See each skill's own README for full details.
 
